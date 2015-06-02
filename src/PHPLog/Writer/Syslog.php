@@ -7,15 +7,33 @@ use PHPLog\Level;
 use PHPLog\WriterAbstract;
 use PHPLog\Layout\Pattern;
 
+/**
+ * This writer logs to the system logger.
+ * @version 1
+ * @author Jack Timblin
+ */
 class Syslog extends WriterAbstract {
 
+	/* the identifier used in the logger to identify the application in the log. */
 	protected $applicationIdentifier = 'PHPLog';
+
+	/* the default options is LOG_PID|LOG_CONS {@see http://php.net/manual/en/function.openlog.php#option} to 
+	   all of the available options. This is the options to apply to the logger.
+	 */
 	protected $options = 'PID|CONS';
+
+	/* the default facility is LOG_USER {@see http://php.net/manual/en/function.openlog.php#facility} to 
+	   all of the available options. This is the type of program that is logging.
+	 */
 	protected $facility = 'USER';
 
+	/* the default pattern for the log message. */
 	protected $pattern = '[%level|u] - [%date{Y-m-d H:i:s}|u] - %message';
 
+	/* the int representation of the options to provide the syslog. */
 	private $opt;
+
+	/* the int representation of the facility to provide the syslog. */
 	private $fac;
 
 	/**
