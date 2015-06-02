@@ -57,6 +57,14 @@ class Level {
 	}
 
 	/**
+	 * returns the int representation of this level.
+	 * @return int the int represnetation of this nlevel.
+	 */
+	public function getIntLevel() {
+		return $this->level;
+	}
+
+	/**
 	 * @override
 	 * returns the string representation of this level object.
 	 * @return string the string level.

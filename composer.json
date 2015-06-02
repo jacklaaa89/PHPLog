@@ -1,0 +1,17 @@
+{
+    "name": "phplog/phplog",
+    "description": "PHP Logging Framework",
+    "keywords": ["log", "logging"],
+    "homepage": "http://bitbucket.org/jtimblin/phplog",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jack Timblin",
+            "email": "jacktimblin@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"PHPLog\\": "src/PHPLog"}
+    }
+}
