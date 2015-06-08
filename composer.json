@@ -1,9 +1,9 @@
 {
     "name": "phplog/phplog",
     "description": "PHP Logging Framework",
+    "version" : "1.0",
     "keywords": ["log", "logging"],
     "homepage": "http://bitbucket.org/jtimblin/phplog",
-    "type": "library",
     "license": "MIT",
     "authors": [
         {
@@ -11,7 +11,11 @@
             "email": "jacktimblin@gmail.com"
         }
     ],
+    "minimum-stability" : "stable",
     "autoload": {
         "psr-4": {"PHPLog\\": "src/PHPLog"}
+    },
+    "require" : {
+        "swiftmailer/swiftmailer": "5.*",
     }
 }
