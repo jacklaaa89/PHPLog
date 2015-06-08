@@ -16,6 +16,6 @@
         "psr-4": {"PHPLog\\": "src/PHPLog"}
     },
     "require" : {
-        "swiftmailer/swiftmailer": "5.*",
+        "swiftmailer/swiftmailer": "5.*"
     }
 }
