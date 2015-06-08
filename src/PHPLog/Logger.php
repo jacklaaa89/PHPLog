@@ -1,10 +1,11 @@
 <?php
 
-namespace PHPLog;
+namespace RMA\Core\Utilities\Logger;
 
-use PHPLog\WriterAbstract;
-use PHPLog\Level;
-use PHPLog\ExtraAbstract;
+use RMA\Core\Utilities\Logger\WriterAbstract;
+use RMA\Core\Utilities\Logger\Level;
+use RMA\Core\Utilities\Logger\ExtraAbstract;
+use RMA\Core\Utilities\Logger\FilterAbstract;
 
 /**
  * The Logger class which is the class what will start the logging process.
@@ -44,6 +45,9 @@ class Logger extends ExtraAbstract {
 	   3: all of the attached writers failed to log the event.
 	*/
 	private $propogation = true;
+
+	/* any filter that will be applied to the log event. */
+	protected $filter;
 
 	/**
 	 * Constructor - sets the name and the default logging level.
@@ -134,7 +138,18 @@ class Logger extends ExtraAbstract {
 		$handled = false;
 
 		if($this->isEnabledFor($level) && strlen($message) != 0) {
+
 			$event = new Event($this, $level, $message);
+
+			//check any filters applied to this logger.
+			$filter = $this->getFilter();
+			while($filter !== null) {
+				switch($filter->decide($event)) {
+					case FilterAbstract::DENY: return;
+					case FilterAbstract::ACCEPT: $filter = null; break;
+					case FilterAbstract::NEUTRAL: $filter = $filter->getNext(); break; 
+				}
+			}
 
 			//add global extras.
 			$global = self::getHierarchy()->getExtras();
@@ -185,6 +200,53 @@ class Logger extends ExtraAbstract {
 			$this->parent->log($level, $message, $extras);
 		}
 
+	}
+
+	/**
+	 * gets the filter chain currently attached to this logger
+	 * @return FilterAbstract|null the filter attached to this logger or null
+	 * if there is no filter chain on this logger.
+	 */
+	public function getFilter() {
+		return $this->filter;
+	}
+
+	/**
+	 * clears the filter chain.
+	 */
+	public function clearFilter() {
+		$this->filter = null;
+	}
+
+	/**
+	 * adds a new filter to the filter chain.
+	 * @param FilterAbstract $filter the filter to add to the filter chain.
+	 */
+	public function addFilter(FilterAbstract $filter) {
+		if(!($filter instanceof FilterAbstract)) {
+			return;
+		}
+
+		if(!($this->filter) instanceof FilterAbstract) {
+			$this->filter = $filter;
+		} else {
+			$this->filter->addNext($filter);
+		}
+
+	}
+
+	/**
+	 * adds a new filter chain from an array
+	 * @param array $filters an array of filters.
+	 */
+	public function addFilterChain($filters) {
+		if(is_array($filters)) {
+			foreach($filters as $filter) {
+				if($filter instanceof FilterAbstract) {
+					$this->addFilter($filter);
+				}
+			}
+		}
 	}
 
 	/**
@@ -298,6 +360,15 @@ class Logger extends ExtraAbstract {
 	}
 
 	/**
+	 * returns the current log renderer instance, this is shared between all 
+	 * logger instances.
+	 * @return Renderer the global instance of a log renderer.
+	 */
+	public static function getRenderer() {
+		return self::getHierarchy()->getRenderer();
+	}
+
+	/**
 	 * adds an extra variable to the global scope.
 	 * @param string $name the name of the extra variable.
 	 * @param mixed $value the value to store.
@@ -319,6 +390,38 @@ class Logger extends ExtraAbstract {
 	 */
 	public static function clearGlobalExtras() {
 		self::getHierarchy()->clearExtras();
+	}
+
+	/**
+	 * adds a new global renderer to use for a specific class
+	 * renderers are shared between all loggers in the current
+	 * hierarchy.
+	 */
+	public static function addRenderer($class, $renderer, $disableInheritanceRender = false) {
+		self::getRenderer()->addRenderer($class, $renderer, $disableInheritanceRender);
+	}
+
+	/**
+	 * removes a new global renderer.
+	 */
+	public static function removeRenderer($class) {
+		self::getRenderer()->removeRenderer($class);
+	}
+
+	/**
+	 * sets the default renderer to use if we dont have a 
+	 * specific renderer to use for an object.
+	 * @param RendererInterface the renderer to use as the default renderer.
+	 */
+	public static function setDefaultRenderer($default) {
+		self::getRenderer()->setDefaultRenderer($default);
+	}
+
+	/**
+	 * resets the global default renderer.
+	 */
+	public function resetDefaultRenderer() {
+		self::getRenderer()->resetDefaultRenderer();
 	}
 
 }

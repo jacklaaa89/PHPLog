@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPLog;
+namespace RMA\Core\Utilities\Logger;
 
-use PHPLog\Logger;
-use PHPLog\Root;
-use PHPLog\Level;
-use PHPLog\ExtraAbstract;
+use RMA\Core\Utilities\Logger\Logger;
+use RMA\Core\Utilities\Logger\Root;
+use RMA\Core\Utilities\Logger\Level;
+use RMA\Core\Utilities\Logger\ExtraAbstract;
 
 /**
  * This class maintains the hierarchy of loggers that are currently in use.
@@ -28,6 +28,9 @@ class LoggerHierarchy extends ExtraAbstract {
        @todo - currently not in use.
 	*/
 	protected $threshold;
+
+	/* the global renderer instance. */
+	protected $renderer;
 
 	/**
 	 * Constructor - initializes a new hierarchy and attaches the root.
@@ -86,6 +89,17 @@ class LoggerHierarchy extends ExtraAbstract {
 	 */
 	public function setThreshold(Level $threshold) {
 		$this->threshold = $threshold;
+	}
+
+	/**
+	 * gets the global renderer instance.
+	 * @return Renderer the global renderer instance.
+	 */
+	public function getRenderer() {
+		if(!isset($this->renderer)) {
+			$this->renderer = Renderer::newInstance();
+		}
+		return $this->renderer;
 	}
 
 }

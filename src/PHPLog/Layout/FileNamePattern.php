@@ -1,9 +1,9 @@
 <?php
 
-namespace PHPLog\Layout;
+namespace RMA\Core\Utilities\Logger\Layout;
 
-use PHPLog\Layout\Pattern;
-use PHPLog\Event;
+use RMA\Core\Utilities\Logger\Layout\Pattern;
+use RMA\Core\Utilities\Logger\Event;
 
 /** 
  * An expansion of the Pattern class to not only allow for parsing a file location

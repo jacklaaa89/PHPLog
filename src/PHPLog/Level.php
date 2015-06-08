@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPLog;
+namespace RMA\Core\Utilities\Logger;
 
 /**
  * An encapsulation of a log level as levels are ordered by severity.
@@ -57,8 +57,17 @@ class Level {
 	}
 
 	/**
-	 * returns the int representation of this level.
-	 * @return int the int represnetation of this nlevel.
+	 * determines if another level is equal to this level.
+	 * @param Level $level the level to compare with
+	 * @return bool <b>TRUE</b> if $level matches this level, <b>FALSE</b> otherwise.
+	 */
+	public function equals($level) {
+		return ($level instanceof Level && ($this->level == $level->getIntLevel()));
+	}
+
+	/**
+	 * returns the int representation of this level object.
+	 * @return int the int reprentation of this level object.
 	 */
 	public function getIntLevel() {
 		return $this->level;

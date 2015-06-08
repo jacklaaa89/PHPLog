@@ -1,12 +1,16 @@
 <?php
 
-namespace PHPLog;
+namespace RMA\Core\Utilities\Logger;
 
-use PHPLog\Logger;
+use RMA\Core\Utilities\Logger\Logger;
+use RMA\Core\Utilities\Logger\LocationInfo;
 
 /**
  * this class encapsulates an event that is to be logged.
  * @version 1
+ * @version 1.1 - the location info is now generated based on the
+ * file and line in the debug, rather than the class. This means we ca
+ * also account for times when the logger is used outside a class or a function.
  * @author Jack Timblin
  */
 class Event {
@@ -23,6 +27,18 @@ class Event {
 	/* the date that this event was created. */
 	private $date;
 
+	/* the line number which the log call was made. */
+	private $line = '';
+
+	/* the file in which the log call was made. */
+	private $file = '';
+
+	/* the class that called the function. */
+	private $class = '';
+
+	/* the function which the log call was made in. */
+	private $function = '';
+
 	/**
 	 * Constructor - creates a new Event.
 	 * @param Logger $logger the logger that will be used to log this event.
@@ -38,7 +54,94 @@ class Event {
 		$this->message = $message;
 		$this->date = time();
 
+		//generate the location information for this log event.
+		$trace = debug_backtrace();
+
+		//need to get the first entry where the class is not a Logger/Event.
+		$forbidden = array('event', 'logger');
+
+		//look for the first file entry that does not contain our logger framework
+		//class calls.
+		foreach($trace as $i => $entry) {
+			//check if the file is set.
+			if(!isset($entry['file']) || strlen($entry['file']) == 0) {
+				continue; //no file entry.
+			}
+
+			$e = explode('/', trim($entry['file']));
+			$en = explode('.', end($e));
+			if(count($en) == 0 || in_array(strtolower($en[0]), $forbidden)) {
+				continue; //the file contains one of the logger classes.
+			}
+
+			$this->file = $entry['file'];
+			$this->line = (isset($entry['line'])) ? $entry['line'] : -1;
+			
+			//determine if the class/function are set and they dont contain
+			//our logger framework classes.
+			if(isset($entry['class']) && strlen($entry['class']) > 0) {
+				$ce = explode('\\', trim($entry['class']));
+				if(!in_array(strtolower(end($ce)), $forbidden)) {
+					$this->function = $entry['function'];
+					$this->class = $entry['class'];
+				}
+			}
+
+			if(!isset($this->class) || strlen($this->class) == 0) {
+				//try one down.
+				if(isset($trace[$i + 1])) {
+					$oneDown = $trace[$i + 1];
+					if(isset($oneDown['class']) && strlen($entry['class']) > 0) {
+						$ce = explode('\\', trim($oneDown['class']));
+						if(!in_array(strtolower(end($ce)), $forbidden)) {
+							$this->function = $oneDown['function'];
+							$this->class = $oneDown['class'];
+						}
+					}
+				}
+			}
+
+			//if it gets to this point we have calculated the correct details.
+			break;
+		}
+
 	}
+
+	/**
+	 * returns the line from this event for the
+	 * class that triggered the log event.
+	 * @return string the line from this event.
+	 */
+	public function getLine() {
+		return $this->line;
+	}
+
+	/**
+	 * returns the file from this event for the
+	 * class that triggered the log event.
+	 * @return string the file from this event.
+	 */
+	public function getFile() {
+		return $this->file;
+	}
+
+	/**
+	 * returns the class from this event for the
+	 * class that triggered the log event.
+	 * @return string the class from this event.
+	 */
+	public function getClass() {
+		return $this->class;
+	}
+
+	/**
+	 * returns the function from this event for the
+	 * class that triggered the log event.
+	 * @return string the function from this event.
+	 */
+	public function getFunction() {
+		return $this->function;
+	}	
 
 	/**
 	 * retrieve the message from this event.
@@ -47,6 +150,7 @@ class Event {
 	public function getMessage() {
 		return $this->message;
 	}
+
 	/**
 	 * retrieve the level of this event.
 	 * @return Level the level.
@@ -54,6 +158,7 @@ class Event {
 	public function getLevel() {
 		return $this->level;
 	}
+
 	/**
 	 * retrieve the logger from this event.
 	 * @return Logger the logger instance.
@@ -61,6 +166,7 @@ class Event {
 	public function getLogger() {
 		return $this->logger;
 	}
+
 	/**
 	 * retrieve the date from this event as a unix timestamp.
 	 * @return int the date timestamp.

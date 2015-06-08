@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPLog\Writer;
+namespace RMA\Core\Utilities\Logger\Writer;
 
-use PHPLog\Event;
-use PHPLog\Level;
-use PHPLog\WriterAbstract;
-use PHPLog\Layout\Pattern;
+use RMA\Core\Utilities\Logger\WriterAbstract;
+use RMA\Core\Utilities\Logger\Event;
+use RMA\Core\Utilities\Logger\Layout\Pattern;
+use RMA\Core\Utilities\Logger\Level;
 
 /**
  * This writer logs to the system logger.
@@ -28,7 +28,7 @@ class Syslog extends WriterAbstract {
 	protected $facility = 'USER';
 
 	/* the default pattern for the log message. */
-	protected $pattern = '[%level|u] - [%date{Y-m-d H:i:s}|u] - %message';
+	protected $pattern = '[%level|u] - [%date{Y-m-d H:i:s}|u] - [%logger] - %message';
 
 	/* the int representation of the options to provide the syslog. */
 	private $opt;
@@ -84,7 +84,7 @@ class Syslog extends WriterAbstract {
 		if(!openlog($this->applicationIdentifier, $this->opt, $this->fac)) {
 			return false;
 		}
-		if(!syslog($this->getSyslogEquivilentLevel($event), $value)) {
+		if(!syslog($this->getSyslogEquivilentLevel($event->getLevel()), $value)) {
 			return false;
 		}
 		return closelog();
@@ -116,14 +116,14 @@ class Syslog extends WriterAbstract {
 	/**
 	 * determines the syslog level to use based on the level in the log
 	 * event.
-	 * @param Level $level the level that we are parsing.
+	 * @param Level $logLevel the level that we are parsing.
 	 * @return int the syslog level that resembles the $levels level.
 	 */
-	private function getSyslogEquivilentLevel(Level $level) {
+	private function getSyslogEquivilentLevel(Level $logLevel) {
 
 		$level = LOG_DEBUG;
 
-		switch($level->getIntLevel()) {
+		switch($logLevel->getIntLevel()) {
 			case Level::FATAL:
 				$level = LOG_ALERT;
 				break;

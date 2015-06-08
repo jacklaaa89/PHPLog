@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPLog\Writer;
+namespace RMA\Core\Utilities\Logger\Writer;
 
 
-use PHPLog\Writer\File;
-use PHPLog\Event;
-use PHPLog\Layout\Bind;
+use RMA\Core\Utilities\Logger\Writer\File;
+use RMA\Core\Utilities\Logger\Event;
+use RMA\Core\Utilities\Logger\Layout\Bind;
 
 /**
  * an extension of a file writer which is specifically defined to write logs to a csv file.

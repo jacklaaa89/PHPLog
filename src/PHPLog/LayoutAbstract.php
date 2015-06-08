@@ -1,9 +1,10 @@
 <?php
 
-namespace PHPLog;
+namespace RMA\Core\Utilities\Logger;
 
-use PHPLog\Event;
-use PHPLog\Extension;
+use RMA\Core\Utilities\Logger\Event;
+use RMA\Core\Utilities\Logger\Extension;
+use RMA\Core\Utilities\Logger\Renderer;
 
 /**
  * Base class for all layout implementations.
@@ -18,5 +19,16 @@ abstract class LayoutAbstract extends Extension {
 	 * @return mixed the parsed event in the structure of the layout itself.
 	 */
 	public abstract function parse(Event $event);
+
+	/**
+	 * attempts to render a variable to push into a log.
+	 * this allows for custom renderers for classes passed into the event.
+	 * @param mixed the object to render
+	 * @return string the renderered object.
+	 */
+	public function render($object) {
+		$renderer = Logger::getRenderer();
+		return $renderer->render($object);
+	}
 
 }

@@ -1,20 +1,22 @@
 <?php
 
-namespace PHPLog\Layout;
+namespace RMA\Core\Utilities\Logger\Layout;
 
-use PHPLog\LayoutAbstract;
-use PHPLog\Event;
+use RMA\Core\Utilities\Logger\LayoutAbstract;
+use RMA\Core\Utilities\Logger\Event;
 
 /**
  * This class formats a log based on a pattern that is provided to the configuration
  * and replaces placeholders with the log values when they are returned as a string.
  * @version 2 - updated the regex which parses patterns.
+ * @version 2.1 - added location information for where the event was triggered from.
+ * @version 2.2 - now utilizes renderers to format variables from objects to strings.
  * @author Jack Timblin
  */
 class Pattern extends LayoutAbstract {
 
 	/* the current version of the pattern parser. */
-	const VERSION = 2;
+	const VERSION = 2.21;
 
 	/* any values that need special treatment, i.e formatting dates, currency etc. */
 	private $specialValues;
@@ -40,7 +42,7 @@ class Pattern extends LayoutAbstract {
 	 * @version 2 - added support for placeholders as attributes in other placeholders i.e %date{%format}
 	 * and it also allows for alphanumeric variables to be passed to filters. i.e %cost|nf(2)|uc
 	 */
-	private $regex = '/(__ID__([\w\d]+)(?:\{([\w\d\-, \:\/]+|(?:(__ID__)([\w\d]+)))\})?(?:\|(?:([\w]{1,2})(?:\(([\w\d]+)?\))?)(?:\|([\w\d]{1,2})(?:\(([\w\d]+)?\))?)?)?)/';
+	private $regex = '/(__ID__([\w\d]+)(?:\{([\w\d\-, \:\/]+|(?:(__ID__)([\w\d]+)))\})?(?:\|(?:([\w]{1,2})(?:\(([\w\d+\/\:]+)?\))?)(?:\|([\w\d]{1,2})(?:\(([\w\d_\/\:]+)?\))?)?)?)/';
 
 	/* added some constant values. */
 	private $consts = array();
@@ -62,7 +64,7 @@ class Pattern extends LayoutAbstract {
 		$this->filters = array(
 			/* ucwords => (a string => A String) */
 			'uc' => function($value, $attr) {
-				return ucwords($value);
+				return ucwords(strtolower($value));
 			},
 			/* strtoupper => (a string => A STRING) */
 			'u' => function($value, $attr) {
@@ -91,13 +93,18 @@ class Pattern extends LayoutAbstract {
 			'rt' => function($value, $attr) {
 				$attr = (strlen($attr) > 0) ? $attr : ' ';
 				return rtrim($value, $attr);
-			}
+			},
+			//replaces $attr with ' ' good for spliting words etc.
+			'e' => function($value, $attr) {
+				$value = implode(' ', explode($attr, $value));
+				return $value;
+			}	
 		);
 
 		//initialize the const values. i.e the variables that are defined as constants.
 		$this->consts = array(
 			'newline' => PHP_EOL,
-			'tab' => "\t" 
+			'tab' => "\t"
 		);
 
 		$this->specialValues = array(
@@ -155,6 +162,7 @@ class Pattern extends LayoutAbstract {
 	 * t - applies trim to the value.
 	 * lt - applies ltrim to the value.
 	 * rt - applies rtrim to the value.
+	 * e(delimiter) - seperates a word by a delimiter. so IS_NULL with e(_) becomes IS NULL
 	 *
 	 * These filters are applied by using the pipe operator in a variable. for example: %message|u
 	 *
@@ -167,6 +175,15 @@ class Pattern extends LayoutAbstract {
 	 * Filters are also allowed alphanumeric arguments in order to add more detailed customisation in using filters.
 	 * it also unlocks the possibility of using more complex filters. for example %cost|nf(2)|t will apply number_format
 	 * to the resolved %cost variable to 2 decimal places and then trim will be applies to that value.
+	 *
+	 * ### VERSION 2.1 ###
+	 * the Event now carries information for the location on where the log event was triggered. This information 
+	 * includes: 
+	 *
+	 * %line - the line number in the script that executed the log event.
+	 * %file - the name of the file that executed the log event.
+	 * %class - the class name of the object that executed the event.
+	 * %function - the function that the log event was called in.
 	 *
 	 * @param Event $event the event that we are attempting to log.
 	 * @return string the $event formatted to the provided pattern.
@@ -197,8 +214,7 @@ class Pattern extends LayoutAbstract {
 			if(!$isConst) {
 				$name = 'get'.ucwords($matches[2][$i]);
 				$var = $event->$name();
-				$var = ($var !== null) ? $var : '';
-				$var = (!is_string($var)) ? (string) $var : $var;
+				$var = $this->render($var);
 
 				//pass it through any filters that have been added to the variable.
 				$f = array($matches[6][$i] => $matches[7][$i], $matches[8][$i] => $matches[9][$i]);
