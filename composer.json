@@ -1,5 +1,5 @@
 {
-    "name": "phplog/phplog",
+    "name": "jtimblin/phplog",
     "description": "PHP Logging Framework",
     "version" : "1.0",
     "keywords": ["log", "logging"],
