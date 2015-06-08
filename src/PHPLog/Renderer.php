@@ -1,10 +1,10 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
-use RMA\Core\Utilities\Logger\Renderer\DefaultRenderer;
-use RMA\Core\Utilities\Logger\Renderer\Logger as LoggerRenderer;
-use RMA\Core\Utilities\Logger\Renderer\Throwable;
+use PHPLog\Renderer\DefaultRenderer;
+use PHPLog\Renderer\Logger as LoggerRenderer;
+use PHPLog\Renderer\Throwable;
 
 /**
  * This class handles determining what renderer to use on a variable.

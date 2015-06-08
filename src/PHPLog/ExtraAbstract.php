@@ -1,6 +1,6 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
 /**
  * A container for classes that contain a extra variable scope, i.e classes that

@@ -1,9 +1,9 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger\Layout;
+namespace PHPLog\Layout;
 
-use RMA\Core\Utilities\Logger\LayoutAbstract;
-use RMA\Core\Utilities\Logger\Event;
+use PHPLog\LayoutAbstract;
+use PHPLog\Event;
 
 /**
  * This class formats a log based on a pattern that is provided to the configuration

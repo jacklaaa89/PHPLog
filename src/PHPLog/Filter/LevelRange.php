@@ -35,7 +35,7 @@ class LevelRange extends FilterAbstract {
 	}
 
 	/**
-	 * @see \RMA\Core\Utilities\Logger\FilterAbstract::decide()
+	 * @see \PHPLog\FilterAbstract::decide()
 	 */
 	public function decide(Event $event) {
 

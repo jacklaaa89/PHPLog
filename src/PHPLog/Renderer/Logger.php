@@ -1,9 +1,9 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger\Renderer;
+namespace PHPLog\Renderer;
 
-use RMA\Core\Utilities\Logger\RendererInterface;
-use RMA\Core\Utilities\Logger\Logger as LoggerInstance;
+use PHPLog\RendererInterface;
+use PHPLog\Logger as LoggerInstance;
 
 /**
  * This renderer is used to convert a Logger instance into a string.
@@ -14,7 +14,7 @@ use RMA\Core\Utilities\Logger\Logger as LoggerInstance;
 class Logger implements RendererInterface {
 
 	/**
-	 * @see RMA\Core\Utilities\Logger\RendererInterface::render()
+	 * @see PHPLog\RendererInterface::render()
 	 */
 	public function render($object) {
 

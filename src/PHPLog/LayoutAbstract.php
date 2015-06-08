@@ -1,10 +1,10 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
-use RMA\Core\Utilities\Logger\Event;
-use RMA\Core\Utilities\Logger\Extension;
-use RMA\Core\Utilities\Logger\Renderer;
+use PHPLog\Event;
+use PHPLog\Extension;
+use PHPLog\Renderer;
 
 /**
  * Base class for all layout implementations.

@@ -1,10 +1,10 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger\Writer;
+namespace PHPLog\Writer;
 
-use RMA\Core\Utilities\Logger\Writer\File;
-use RMA\Core\Utilities\Logger\Event;
-use RMA\Core\Utilities\Logger\Layout\FileNamePattern;
+use PHPLog\Writer\File;
+use PHPLog\Event;
+use PHPLog\Layout\FileNamePattern;
 
 /**
  * An extended File writer, with the added functionality of generating a new file

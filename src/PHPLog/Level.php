@@ -1,6 +1,6 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
 /**
  * An encapsulation of a log level as levels are ordered by severity.

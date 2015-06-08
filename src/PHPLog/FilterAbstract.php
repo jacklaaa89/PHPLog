@@ -1,8 +1,8 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
-use RMA\Core\Utilities\Logger\Event;
+use PHPLog\Event;
 
 /**
  * Base class for filters used in the logger.

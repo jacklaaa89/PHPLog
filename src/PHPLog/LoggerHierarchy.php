@@ -1,11 +1,11 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
-use RMA\Core\Utilities\Logger\Logger;
-use RMA\Core\Utilities\Logger\Root;
-use RMA\Core\Utilities\Logger\Level;
-use RMA\Core\Utilities\Logger\ExtraAbstract;
+use PHPLog\Logger;
+use PHPLog\Root;
+use PHPLog\Level;
+use PHPLog\ExtraAbstract;
 
 /**
  * This class maintains the hierarchy of loggers that are currently in use.

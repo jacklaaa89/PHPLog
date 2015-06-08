@@ -1,10 +1,10 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger\Writer;
+namespace PHPLog\Writer;
 
-use RMA\Core\Utilities\Logger\WriterAbstract;
-use RMA\Core\Utilities\Logger\Event;
-use RMA\Core\Utilities\Logger\Layout\Bind;
+use PHPLog\WriterAbstract;
+use PHPLog\Event;
+use PHPLog\Layout\Bind;
 
 class PDO extends WriterAbstract {
 

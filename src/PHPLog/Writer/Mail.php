@@ -1,11 +1,11 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger\Writer;
+namespace PHPLog\Writer;
 
-use RMA\Core\Utilities\Logger\WriterAbstract;
-use RMA\Core\Utilities\Logger\Event;
-use RMA\Core\Utilities\Logger\Level;
-use RMA\Core\Utilities\Logger\Layout\Pattern;
+use PHPLog\WriterAbstract;
+use PHPLog\Event;
+use PHPLog\Level;
+use PHPLog\Layout\Pattern;
 
 /**
  * A writer which outputs a block of log entries to email.

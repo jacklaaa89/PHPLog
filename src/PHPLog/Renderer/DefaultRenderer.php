@@ -1,8 +1,8 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger\Renderer;
+namespace PHPLog\Renderer;
 
-use RMA\Core\Utilities\Logger\RendererInterface;
+use PHPLog\RendererInterface;
 
 /** 
  * This is the implementation of the default renderer class
@@ -14,7 +14,7 @@ use RMA\Core\Utilities\Logger\RendererInterface;
 class DefaultRenderer implements RendererInterface {
 
 	/**
-	 * @see RMA\Core\Utilities\Logger\RendererInterface::render()
+	 * @see PHPLog\RendererInterface::render()
 	 */
 	public function render($object) {
 

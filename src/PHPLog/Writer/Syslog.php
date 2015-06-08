@@ -1,11 +1,11 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger\Writer;
+namespace PHPLog\Writer;
 
-use RMA\Core\Utilities\Logger\WriterAbstract;
-use RMA\Core\Utilities\Logger\Event;
-use RMA\Core\Utilities\Logger\Layout\Pattern;
-use RMA\Core\Utilities\Logger\Level;
+use PHPLog\WriterAbstract;
+use PHPLog\Event;
+use PHPLog\Layout\Pattern;
+use PHPLog\Level;
 
 /**
  * This writer logs to the system logger.

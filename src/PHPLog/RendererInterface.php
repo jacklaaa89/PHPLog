@@ -1,6 +1,6 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
 /**
  * The interface that all renderers in the system have to implement in order

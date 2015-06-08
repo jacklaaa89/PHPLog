@@ -1,9 +1,9 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger\Writer;
+namespace PHPLog\Writer;
 
-use RMA\Core\Utilities\Logger\WriterAbstract;
-use RMA\Core\Utilities\Logger\Event;
+use PHPLog\WriterAbstract;
+use PHPLog\Event;
 
 /**
  * A writer which completely ignores all incoming log events. Mainly for use in 

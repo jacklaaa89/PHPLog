@@ -1,9 +1,9 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
-use RMA\Core\Utilities\Logger\Logger;
-use RMA\Core\Utilities\Logger\LocationInfo;
+use PHPLog\Logger;
+use PHPLog\LocationInfo;
 
 /**
  * this class encapsulates an event that is to be logged.

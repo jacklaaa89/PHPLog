@@ -20,7 +20,7 @@ class DenyAll extends FilterAbstract {
 	public function __construct($config = array()) {}
 
 	/**
-	 * @see \RMA\Core\Utilities\Logger\FilterAbstract::decide()
+	 * @see \PHPLog\FilterAbstract::decide()
 	 */
 	public function decide(Event $event) {
 		return FilterAbstract::DENY;

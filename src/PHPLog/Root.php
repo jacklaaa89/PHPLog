@@ -1,10 +1,10 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
-use RMA\Core\Utilities\Logger\Logger;
-use RMA\Core\Utilities\Logger\Level;
-use RMA\Core\Utilities\Logger\Writer\EchoWriter;
+use PHPLog\Logger;
+use PHPLog\Level;
+use PHPLog\Writer\EchoWriter;
 
 /**
  * An instance of a Root logger, which is effectively just a normal

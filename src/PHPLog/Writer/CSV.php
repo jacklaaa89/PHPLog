@@ -1,11 +1,11 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger\Writer;
+namespace PHPLog\Writer;
 
 
-use RMA\Core\Utilities\Logger\Writer\File;
-use RMA\Core\Utilities\Logger\Event;
-use RMA\Core\Utilities\Logger\Layout\Bind;
+use PHPLog\Writer\File;
+use PHPLog\Event;
+use PHPLog\Layout\Bind;
 
 /**
  * an extension of a file writer which is specifically defined to write logs to a csv file.
@@ -53,7 +53,7 @@ class CSV extends File {
 
 	/**
 	 * @override
-	 * @see \RMA\Core\Utilities\Logger\Writer\File::writeNoLock()
+	 * @see \PHPLog\Writer\File::writeNoLock()
 	 * writes to a csv using fputcsv instead of fwrite.
 	 */
 	protected function writeNoLock($value) {
@@ -67,7 +67,7 @@ class CSV extends File {
 
 	/**
 	 * @override
-	 * @see \RMA\Core\Utilities\Logger\Writer\File::writeLock()
+	 * @see \PHPLog\Writer\File::writeLock()
 	 * writes to a csv using fputcsv instead of fwrite.
 	 */
 	protected function writeLock($value) {

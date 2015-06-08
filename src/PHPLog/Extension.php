@@ -1,6 +1,6 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
 /**
  * class which adds default functionality to all writer and layout classes.

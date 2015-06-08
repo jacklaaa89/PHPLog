@@ -1,11 +1,11 @@
 <?php
 
-namespace RMA\Core\Utilities\Logger;
+namespace PHPLog;
 
-use RMA\Core\Utilities\Logger\WriterAbstract;
-use RMA\Core\Utilities\Logger\Level;
-use RMA\Core\Utilities\Logger\ExtraAbstract;
-use RMA\Core\Utilities\Logger\FilterAbstract;
+use PHPLog\WriterAbstract;
+use PHPLog\Level;
+use PHPLog\ExtraAbstract;
+use PHPLog\FilterAbstract;
 
 /**
  * The Logger class which is the class what will start the logging process.
