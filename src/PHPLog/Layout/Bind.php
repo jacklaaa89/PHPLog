@@ -85,7 +85,7 @@ class Bind extends Pattern {
 		$vars = get_object_vars($event);
 
 		foreach($vars as $name => $val) {
-			$event->{$name} = str_replace($this->delimiter, '', $val);
+			$event->{$name} = str_replace($this->delimiter, '', $this->render($val));
 		}
 
 	}
