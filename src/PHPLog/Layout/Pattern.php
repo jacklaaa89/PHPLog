@@ -212,16 +212,50 @@ class Pattern extends LayoutAbstract {
 	 * @return string the $event formatted to the provided pattern.
 	 */
 	public function stableParse(Event $event) {
+		return $this->parseStatement($event, $this->pattern);
+	}
 
+	public function betaParse(Event $event) {
+		//we need to first parse any if/else statements that are in the pattern.
+		preg_match_all($this->regex_if, $this->pattern, $matches);
+		
+		//check if we had any if/statement matches in the pattern.
+		$hasMatches = (is_array($matches) && isset($matches[0]) && count($matches[0]) > 0);
+
+		$statement = $this->pattern;
+
+		if($hasMatches) {
+			//go through each of the matches and evaluate the statement.
+			for($i = 0; $i < count($matches[0]); $i++) {
+				$exprVar = ''; $placeholder = $matches[0][$i]; $exprTrue = false;
+				//get the value to test.
+				$exprName = 'get'.ucwords($matches[1][$i]);
+				$exprVar = $event->{$exprName}();
+				//no need to render we are only testing it.
+				//generate the expression.
+				$ex = '$exprTrue = (isset($exprVar));';
+				if(isset($matches[2][$i]) && strlen($matches[2][$i]) > 0) {
+					$operator = $matches[2][$i]; $v = $matches[3][$i];
+					$ex = '$exprVar = (isset($exprVar) && $exprVar '.$operator.' '.$v.');';
+				}
+			}
+			die(var_dump($ex));
+		}
+
+		return $this->parseStatement($event, $statement);
+
+	}
+
+	public function parseStatement(Event $event, $statement) {
 		//parse the variables from the event into the provided pattern.
-		preg_match_all($this->regex, $this->pattern, $matches);
+		preg_match_all($this->regex, $statement, $matches);
 			
 		//check have matches.
 		if(count($matches) == 0 || !isset($matches[2]) || count($matches[2]) == 0) {
 			return $this->pattern; //no matches, return the pattern.
 		}
 
-		$pattern = $this->pattern;
+		$pattern = $statement;
 
 		//get the variables from the event.
 		//get the variable from the event.
@@ -271,14 +305,6 @@ class Pattern extends LayoutAbstract {
 		}
 
 		return $pattern;
-
-	}
-
-	public function betaParse(Event $event) {
-		//we need to first parse any if/else statements that are in the pattern.
-		preg_match_all($this->regex_if, $this->pattern, $matches);
-		die(var_dump($matches));
-
 	}
 
 	public function parse(Event $event) {
