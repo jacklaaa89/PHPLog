@@ -11,12 +11,16 @@ use PHPLog\Event;
  * @version 2 - updated the regex which parses patterns.
  * @version 2.1 - added location information for where the event was triggered from.
  * @version 2.2 - now utilizes renderers to format variables from objects to strings.
+ * @version 3.0beta - added functionality for if/else statement in patterns.
  * @author Jack Timblin
  */
 class Pattern extends LayoutAbstract {
 
 	/* the current version of the pattern parser. */
-	const VERSION = 2.21;
+	const STABLE_VERSION = 'stableParse';
+
+	/* the current version of the beta pattern parser. */
+	const BETA_VERSION = 'betaParse';
 
 	/* any values that need special treatment, i.e formatting dates, currency etc. */
 	private $specialValues;
@@ -30,12 +34,15 @@ class Pattern extends LayoutAbstract {
 	/* the identifier that starts a value placeholder in the pattern. */
 	private $identifier = '%';
 
+	/* the version the user has opted to use, default to stable version VERSION (as of writing 2.21) */
+	private $versionUsed = self::STABLE_VERSION;
+
 	/** 
 	 * the old regex used to parse values into the pattern.
 	 * @version 1.1 - added some more identifiers for date/times in attributes.
-	 * @depreceated - this layout now uses the new regex pattern.
+	 * @depreceated - this layout now uses the new regex pattern and this will be removed in version 3.
 	 */
-	private $regex_old = '/(__ID__(\w+)(?:\{([\w\d\-\,\ \:\/]+)\})?(?:\|([\w]{1,2})(?:\|([\w]{1,2}))*)?)/';
+	//private $regex_old = '/(__ID__(\w+)(?:\{([\w\d\-\,\ \:\/]+)\})?(?:\|([\w]{1,2})(?:\|([\w]{1,2}))*)?)/';
 
 	/**
 	 * the regex used to parse values into the pattern.
@@ -44,21 +51,37 @@ class Pattern extends LayoutAbstract {
 	 */
 	private $regex = '/(__ID__([\w\d]+)(?:\{([\w\d\-, \:\/]+|(?:(__ID__)([\w\d]+)))\})?(?:\|(?:([\w]{1,2})(?:\(([\w\d+\/\:]+)?\))?)(?:\|([\w\d]{1,2})(?:\(([\w\d_\/\:]+)?\))?)?)?)/';
 
+	/**
+	 * the regex to allow for a single if/else statement in patterns.
+	 * @version 1 - allows for a single if/else statement, no nested statements are permitted and will
+	 * be parsed normally.
+	 * @todo this needs to be dramatically improved, and because of this, its an opt-in feature
+	 * of the parser. the syntax is %if {variableName}% '..' (%else% '..')? %endif% if the identifier is '%'.
+	 * the boolean statement in the if is true for boolean values, or non-empty values. false for anything else.
+	 */
+	private $regex_if = '/(?:(?:__ID__if ([\w\d]+)__ID__)((?:([\s\S]+)__ID__else__ID__([\s\S]+))|([\s\S]+))(?:__ID__endif__ID__))/';
+
 	/* added some constant values. */
 	private $consts = array();
 
 	/**
+	 * @override
 	 * Constructor, initialises all values needed to parse patterns.
 	 * @param array $config the configuration for this layout.
 	 */
 	public function __construct($config) {
+		parent::__construct($config);
 
 		//get configuration values passed from the user.
 		$this->pattern = (isset($config['pattern']) && strlen($config['pattern']) > 0) ? $config['pattern'] : 'LOG - %level - %message - %date';
 		$this->identifier = (isset($config['identifier']) && strlen($config['identifier']) > 0) ? $config['identifier'] : $this->identifier;
 
-		//format the regex to parse variables from the pattern.
+		//format the regex's to parse variables from the pattern.
 		$this->regex = str_replace('__ID__', $this->identifier, $this->regex);
+		$this->regex_if = str_replace('__ID__', $this->identifier, $this->regex_if);
+
+		//determine what pattern parser version to use, defaults to the latest stable version.
+		$this->versionUsed = (isset($config['version'])) ? $config['version'] : self::STABLE_VERSION;
 
 		//set up the filters and variables that require special formatting, like dates.
 		$this->filters = array(
@@ -188,7 +211,7 @@ class Pattern extends LayoutAbstract {
 	 * @param Event $event the event that we are attempting to log.
 	 * @return string the $event formatted to the provided pattern.
 	 */
-	public function parse(Event $event) {
+	public function stableParse(Event $event) {
 
 		//parse the variables from the event into the provided pattern.
 		preg_match_all($this->regex, $this->pattern, $matches);
@@ -249,6 +272,20 @@ class Pattern extends LayoutAbstract {
 
 		return $pattern;
 
+	}
+
+	public function betaParse(Event $event) {
+		//we need to first parse any if/else statements that are in the pattern.
+		preg_match_all($this->regex_if, $this->pattern, $matches);
+		die(var_dump($matches));
+
+	}
+
+	public function parse(Event $event) {
+		if(!method_exists($this, $this->versionUsed)) {
+			return ''; //could not parse the event.
+		}
+		return $this->{$this->versionUsed}($event);
 	}
 
 	/**

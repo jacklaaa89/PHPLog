@@ -12,6 +12,13 @@ use PHPLog\Renderer;
  * @author Jack Timblin
  */
 abstract class LayoutAbstract extends Extension {
+
+	protected $config;
+
+	public function __construct($config) {
+		parent::__construct();
+		$this->config = $config;
+	}
 	
 	/** 
 	 * Attempts to parse an event into a layout which can then be used by the writer.
