@@ -56,10 +56,10 @@ class Pattern extends LayoutAbstract {
 	 * @version 1 - allows for a single if/else statement, no nested statements are permitted and will
 	 * be parsed normally.
 	 * @todo this needs to be dramatically improved, and because of this, its an opt-in feature
-	 * of the parser. the syntax is %if {variableName}% '..' (%else% '..')? %endif% if the identifier is '%'.
+	 * of the parser. the syntax is %if {variableName} ({operator} {value})?% '..' (%else% '..')? %endif% if the identifier is '%'.
 	 * the boolean statement in the if is true for boolean values, or non-empty values. false for anything else.
 	 */
-	private $regex_if = '/(?:(?:__ID__if ([\w\d]+)__ID__)((?:([\s\S]+)__ID__else__ID__([\s\S]+))|([\s\S]+))(?:__ID__endif__ID__))/';
+	private $regex_if = '/(?:(?:__ID__if ([\w\d]+)(?: (<=|>=|==|<|>) ([\w\d]+))?__ID__)((?:([\s\S]+)__ID__else__ID__([\s\S]+))|([\s\S]+))(?:__ID__endif__ID__))/';
 
 	/* added some constant values. */
 	private $consts = array();
