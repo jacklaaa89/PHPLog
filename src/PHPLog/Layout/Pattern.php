@@ -236,10 +236,11 @@ class Pattern extends LayoutAbstract {
 				$ex = '$exprTrue = (isset($exprVar));';
 				if(isset($matches[2][$i]) && strlen($matches[2][$i]) > 0) {
 					$operator = $matches[2][$i]; $v = $matches[3][$i];
-					$ex = '$exprVar = (isset($exprVar) && $exprVar '.$operator.' '.$v.');';
+					$ex = '$exprTrue = (isset($exprVar) && ($exprVar '.$operator.' '.$v.'));';
 				}
+				eval($ex);
+				//determine what to render based on the outcome.
 			}
-			die(var_dump($ex));
 		}
 
 		return $this->parseStatement($event, $statement);
