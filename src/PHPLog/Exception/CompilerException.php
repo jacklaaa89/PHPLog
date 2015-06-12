@@ -1,6 +1,6 @@
 <?php
 
-namespace \PHPLog\Exception;
+namespace PHPLog\Exception;
 
 /**
  * Exception class for pattern compilation errors.
