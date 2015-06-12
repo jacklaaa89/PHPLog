@@ -239,7 +239,21 @@ class Pattern extends LayoutAbstract {
 					$ex = '$exprTrue = (isset($exprVar) && ($exprVar '.$operator.' '.$v.'));';
 				}
 				eval($ex);
+
+				$else = null;
 				//determine what to render based on the outcome.
+				//first determine if there was an else statement.
+				if(isset($matches[6][$i]) && strlen($matches[6][$i]) > 0) {
+					$else = $matches[6][$i];
+				}
+
+				//get the if statement.
+				$if = (isset($else)) ? $matches[5][$i] : $matches[7][$i];
+				$variable = ($exprTrue) ? $this->parseStatement($event, $if) 
+							: ((isset($else)) ? $this->parseStatement($event, $else) : '');
+
+				$statement = str_replace($placeholder, $variable, $statement);
+
 			}
 		}
 
