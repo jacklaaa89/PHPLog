@@ -23,6 +23,11 @@ class Bind extends Pattern {
 	/* the arryay of keys to use in the completed bind. */
 	private $keys = array();
 
+	/**
+	 * initializes the layout using the configuration.
+	 * @param Configuration $config the configuration for this layout.
+	 * @see PHPLog\LayoutAbstract::init()
+	 */
 	public function init(Configuration $config) {
 		parent::init($config);
 

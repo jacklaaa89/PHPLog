@@ -59,6 +59,11 @@ class Pattern extends LayoutAbstract {
 	/* added some constant values. */
 	private $consts = array();
 
+	/**
+	 * initializes the layout using the configuration.
+	 * @param Configuration $config the configuration for this layout.
+	 * @see PHPLog\LayoutAbstract::init()
+	 */
 	public function init(Configuration $config) {
 		//get configuration values passed from the user.
 
@@ -274,6 +279,9 @@ class Pattern extends LayoutAbstract {
 	 * - no if/endif statement (i.e an if without an endif and vice versa.)
 	 * - a rogue 'else' without an if or else.
 	 * - a nested if/else statement was found.
+	 *
+	 * ### KNOWN ISSUES / BUGS ###
+	 * an if/else statement is not recognised if any of the inside statements are empty.
 	 *
 	 * @param Event $event the event that we are attempting to log.
 	 * @return string the $event formatted to the provided pattern.

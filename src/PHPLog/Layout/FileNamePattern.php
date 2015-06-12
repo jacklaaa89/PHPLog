@@ -33,6 +33,11 @@ class FileNamePattern extends Pattern {
 	/* the file location to update. */
 	protected $fileLocation;
 
+	/**
+	 * initializes the layout using the configuration.
+	 * @param Configuration $config the configuration for this layout.
+	 * @see PHPLog\LayoutAbstract::init()
+	 */
 	public function init(Configuration $config) {
 		if(!isset($config->pattern)) {
 			$config->pattern = $this->pattern;
