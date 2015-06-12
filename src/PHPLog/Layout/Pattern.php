@@ -4,6 +4,7 @@ namespace PHPLog\Layout;
 
 use PHPLog\LayoutAbstract;
 use PHPLog\Event;
+use PHPLog\Exception\CompilerException;
 
 /**
  * This class formats a log based on a pattern that is provided to the configuration
@@ -55,9 +56,8 @@ class Pattern extends LayoutAbstract {
 	 * the regex to allow for a single if/else statement in patterns.
 	 * @version 1 - allows for a single if/else statement, no nested statements are permitted and will
 	 * be parsed normally.
-	 * @todo this needs to be dramatically improved, and because of this, its an opt-in feature
-	 * of the parser. the syntax is %if {variableName} ({operator} {value})?% '..' (%else% '..')? %endif% if the identifier is '%'.
-	 * the boolean statement in the if is true for boolean values, or non-empty values. false for anything else.
+	 * @version 1.1 - the parser accounts for most/all syntax errors that would break the regex, so this is 
+	 * its final form. We have also optional expressions in the if statement so '%if tester > 3%' is valid.
 	 */
 	private $regex_if = '/(?:(?:__ID__if ([\w\d]+)(?: (<=|>=|==|<|>) ([\w\d]+))?__ID__)((?:([\s\S]+)__ID__else__ID__([\s\S]+))|([\s\S]+))(?:__ID__endif__ID__))/';
 
@@ -281,12 +281,9 @@ class Pattern extends LayoutAbstract {
 	 * pushed back into the statement. We can only handle a single if/else sequence. (more than one can
 	 * be defined in the pattern, but there can be no nested if/else statements)
 	 *
-	 * ### KNOWN ISSUES / BUGS ###
-	 * - any nested if/else statements are not reported as an error, they are evaluated by
-	 *   the parser as a normal statement, and obviously this will break the parser.
-	 *
 	 * @param Event $event the event that we are attempting to log.
 	 * @return string the $event formatted to the provided pattern.
+	 * @throws Exception if a syntax error is found in the pattern.
 	 */
 	public function betaParse(Event $event) {
 		//we need to first parse any if/else statements that are in the pattern.
@@ -324,16 +321,22 @@ class Pattern extends LayoutAbstract {
 				$if = (isset($else)) ? $matches[5][$i] : $matches[7][$i];
 
 				//check that the if or else does not currently contain any nested if/else statements.
-				preg_match_all($this->regex_if, $if, $ifMatches);
+				preg_match_all($this->regex_if, $if, $ifMatches, PREG_OFFSET_CAPTURE);
 				if(is_array($ifMatches) && isset($ifMatches[0]) && count($ifMatches[0]) > 0) {
-					throw new \Exception('Syntax Error: nested if/else sequence found.');
+					throw new \CompilerException('Syntax Error: nested if/else sequence found.', $if);
 				}
 
 				if(isset($else)) {
-					preg_match_all($this->regex_if, $else, $elseMatches);
+					preg_match_all($this->regex_if, $else, $elseMatches, PREG_OFFSET_CAPTURE);
 					if(is_array($elseMatches) && isset($elseMatches[0]) && count($elseMatches[0]) > 0) {
-						throw new \Exception('Syntax Error: nested if/else sequence found.');
+						throw new \CompilerException('Syntax Error: nested if/else sequence found.', $else);
 					}
+				}
+
+				//check for broken nested/if else statements in the if and else.
+				$this->checkForSyntaxErrors($if);
+				if(isset($else)) {
+					$this->checkForSyntaxErrors($else);
 				}
 
 				$variable = ($exprTrue) ? $this->parseStatement($event, $if) 
@@ -343,23 +346,40 @@ class Pattern extends LayoutAbstract {
 
 			}
 		} else {
-			//check we dont have any syntax errors. ('i.e rogue %if {condition}% or %else% or %endif%')
-			if(preg_match('/(?:(?:'.$this->getIdentifier().'if ([\w\d]+)(?: (==|<|>|<=|>=) ([\w\d]+))?'.$this->getIdentifier().'))/',
-			 	$statement)) {
-				throw new \Exception('Syntax Error: if statement defined with no closing endif');
-			}
-			if(preg_match('/'.$this->getIdentifier().'else'.$this->getIdentifier().'/', $statement)) {
-				throw new \Exception('Syntax Error: else statement supplied without if/endif statement');
-			}
-			if(preg_match('/'.$this->getIdentifier().'endif'.$this->getIdentifier().'/', $statement)) {
-				throw new \Exception('Syntax Error: endif statement supplied without if statement');
-			}
+			$this->checkForSyntaxErrors($statement);
 		}
 
 		return $this->parseStatement($event, $statement);
 
 	}
 
+	/**
+	 * checks if any broken if/else statements in a statement.
+	 * @throws \Exception if a syntax error occured.
+	 */
+	private function checkForSyntaxErrors($statement) {
+		//check we dont have any syntax errors. ('i.e rogue %if {condition}% or %else% or %endif%')
+		if(preg_match('/(?:(?:'.$this->getIdentifier().'if ([\w\d]+)(?: (==|<|>|<=|>=) ([\w\d]+))?'.$this->getIdentifier().'))/',
+		 	$statement, $m, PREG_OFFSET_CAPTURE)) {
+			$offset = (isset($m[0]) && count($m[0]) > 0 && isset($m[0][1])) ? $m[0][1] : null;
+			throw new \CompilerException('Syntax Error: if statement defined with no closing endif', $statement, $offset);
+		}
+		if(preg_match('/'.$this->getIdentifier().'else'.$this->getIdentifier().'/', $statement, $m, PREG_OFFSET_CAPTURE)) {
+			$offset = (isset($m[0]) && count($m[0]) > 0 && isset($m[0][1])) ? $m[0][1] : null;
+			throw new \CompilerException('Syntax Error: else statement supplied without if/endif statement', $statement, $offset);
+		}
+		if(preg_match('/'.$this->getIdentifier().'endif'.$this->getIdentifier().'/', $statement, $m, PREG_OFFSET_CAPTURE)) {
+			$offset = (isset($m[0]) && count($m[0]) > 0 && isset($m[0][1])) ? $m[0][1] : null;
+			throw new \CompilerException('Syntax Error: endif statement supplied without if statement', $statement, $offset);
+		}
+	}
+
+	/**
+	 * parses an individual statement, i.e resolves variables and pushes them into the pattern.
+	 * @param Event $event the event to parse.
+	 * @param string $statement the statement to evaluate.
+	 * @return string the evaluated statement.
+	 */
 	public function parseStatement(Event $event, $statement) {
 		//parse the variables from the event into the provided pattern.
 		preg_match_all($this->regex, $statement, $matches);
