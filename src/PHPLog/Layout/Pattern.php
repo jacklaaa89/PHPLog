@@ -370,7 +370,8 @@ class Pattern extends LayoutAbstract {
 		}
 		if(preg_match('/'.$this->getIdentifier().'endif'.$this->getIdentifier().'/', $statement, $m, PREG_OFFSET_CAPTURE)) {
 			$offset = (isset($m[0]) && count($m[0]) > 0 && isset($m[0][1])) ? $m[0][1] : null;
-			throw new CompilerException('Syntax Error: endif statement supplied without if statement', $statement, $offset);
+			$ex = new CompilerException('Syntax Error: endif statement supplied without if statement', $statement, $offset);
+			die(var_dump($ex));
 		}
 	}
 
