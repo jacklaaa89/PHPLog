@@ -24,7 +24,7 @@ class Extension {
 	 * called in the constructor, should be overriden by subclasses to add
 	 * extra functionality on construction.
 	 */
-	public function init() {
+	public function start() {
 		$this->closed = false;
 	}
 
@@ -32,7 +32,7 @@ class Extension {
 	 * Constructor - calls the init() method to allow subclasses to initialize correctly.
 	 */
 	public function __construct() {
-		$this->init();
+		$this->start();
 	}
 
 	/**
