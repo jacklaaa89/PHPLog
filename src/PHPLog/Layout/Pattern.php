@@ -13,6 +13,7 @@ use PHPLog\Exception\CompilerException;
  * @version 2.1 - added location information for where the event was triggered from.
  * @version 2.2 - now utilizes renderers to format variables from objects to strings.
  * @version 3.0beta - added functionality for if/else statement in patterns.
+ * @version 3.0beta2 - added syntax error capturing support.
  * @author Jack Timblin
  */
 class Pattern extends LayoutAbstract {
@@ -280,6 +281,14 @@ class Pattern extends LayoutAbstract {
 	 * The statement inside the if/else is then resolved based on this outcome and this is then
 	 * pushed back into the statement. We can only handle a single if/else sequence. (more than one can
 	 * be defined in the pattern, but there can be no nested if/else statements)
+	 * 
+	 * ### VERSION 3.0beta2 ###
+	 * in this beta version any syntax errors that occur using if/else statements will throw
+	 * an exception. These violations include:
+	 *
+	 * - no if/endif statement (i.e an if without an endif and vice versa.)
+	 * - a rogue 'else' without an if or else.
+	 * - a nested if/else statement was found.
 	 *
 	 * @param Event $event the event that we are attempting to log.
 	 * @return string the $event formatted to the provided pattern.
@@ -323,13 +332,15 @@ class Pattern extends LayoutAbstract {
 				//check that the if or else does not currently contain any nested if/else statements.
 				preg_match_all($this->regex_if, $if, $ifMatches, PREG_OFFSET_CAPTURE);
 				if(is_array($ifMatches) && isset($ifMatches[0]) && count($ifMatches[0]) > 0) {
-					throw new CompilerException('Syntax Error: nested if/else sequence found.', $if);
+					$offset = (isset($ifMatches[0]) && count($ifMatches[0]) > 0 && isset($ifMatches[0][1])) ? $ifMatches[0][1] : null;
+					throw new CompilerException('Syntax Error: nested if/else sequence found.', $if, $offset);
 				}
 
 				if(isset($else)) {
 					preg_match_all($this->regex_if, $else, $elseMatches, PREG_OFFSET_CAPTURE);
 					if(is_array($elseMatches) && isset($elseMatches[0]) && count($elseMatches[0]) > 0) {
-						throw new CompilerException('Syntax Error: nested if/else sequence found.', $else);
+						$offset = (isset($elseMatches[0]) && count($elseMatches[0]) > 0 && isset($elseMatches[0][1])) ? $elseMatches[0][1] : null;
+						throw new CompilerException('Syntax Error: nested if/else sequence found.', $else, $offset);
 					}
 				}
 
@@ -370,8 +381,7 @@ class Pattern extends LayoutAbstract {
 		}
 		if(preg_match('/'.$this->getIdentifier().'endif'.$this->getIdentifier().'/', $statement, $m, PREG_OFFSET_CAPTURE)) {
 			$offset = (isset($m[0]) && count($m[0]) > 0 && isset($m[0][1])) ? $m[0][1] : null;
-			$ex = new CompilerException('Syntax Error: endif statement supplied without if statement', $statement, $offset);
-			die(var_dump($ex));
+			throw new CompilerException('Syntax Error: endif statement supplied without if statement', $statement, $offset);
 		}
 	}
 
