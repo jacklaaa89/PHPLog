@@ -323,13 +323,13 @@ class Pattern extends LayoutAbstract {
 				//check that the if or else does not currently contain any nested if/else statements.
 				preg_match_all($this->regex_if, $if, $ifMatches, PREG_OFFSET_CAPTURE);
 				if(is_array($ifMatches) && isset($ifMatches[0]) && count($ifMatches[0]) > 0) {
-					throw new \CompilerException('Syntax Error: nested if/else sequence found.', $if);
+					throw new CompilerException('Syntax Error: nested if/else sequence found.', $if);
 				}
 
 				if(isset($else)) {
 					preg_match_all($this->regex_if, $else, $elseMatches, PREG_OFFSET_CAPTURE);
 					if(is_array($elseMatches) && isset($elseMatches[0]) && count($elseMatches[0]) > 0) {
-						throw new \CompilerException('Syntax Error: nested if/else sequence found.', $else);
+						throw new CompilerException('Syntax Error: nested if/else sequence found.', $else);
 					}
 				}
 
@@ -362,15 +362,15 @@ class Pattern extends LayoutAbstract {
 		if(preg_match('/(?:(?:'.$this->getIdentifier().'if ([\w\d]+)(?: (==|<|>|<=|>=) ([\w\d]+))?'.$this->getIdentifier().'))/',
 		 	$statement, $m, PREG_OFFSET_CAPTURE)) {
 			$offset = (isset($m[0]) && count($m[0]) > 0 && isset($m[0][1])) ? $m[0][1] : null;
-			throw new \CompilerException('Syntax Error: if statement defined with no closing endif', $statement, $offset);
+			throw new CompilerException('Syntax Error: if statement defined with no closing endif', $statement, $offset);
 		}
 		if(preg_match('/'.$this->getIdentifier().'else'.$this->getIdentifier().'/', $statement, $m, PREG_OFFSET_CAPTURE)) {
 			$offset = (isset($m[0]) && count($m[0]) > 0 && isset($m[0][1])) ? $m[0][1] : null;
-			throw new \CompilerException('Syntax Error: else statement supplied without if/endif statement', $statement, $offset);
+			throw new CompilerException('Syntax Error: else statement supplied without if/endif statement', $statement, $offset);
 		}
 		if(preg_match('/'.$this->getIdentifier().'endif'.$this->getIdentifier().'/', $statement, $m, PREG_OFFSET_CAPTURE)) {
 			$offset = (isset($m[0]) && count($m[0]) > 0 && isset($m[0][1])) ? $m[0][1] : null;
-			throw new \CompilerException('Syntax Error: endif statement supplied without if statement', $statement, $offset);
+			throw new CompilerException('Syntax Error: endif statement supplied without if statement', $statement, $offset);
 		}
 	}
 
