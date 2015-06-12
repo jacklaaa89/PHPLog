@@ -34,7 +34,7 @@ class CompilerException extends \Exception {
 		return $this->offset;
 	}
 
-	public function getMessage() {
+	public function __toString() {
 		return $this->message . ((isset($this->block)) ? ' - in block: "' . $this->block . '"' : '') . ((isset($this->offset)) ? ' - at offset: "' . $this->offset . '"' : '');
 	}
 
