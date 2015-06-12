@@ -84,6 +84,9 @@ class Pattern extends LayoutAbstract {
 		//determine what pattern parser version to use, defaults to the latest stable version.
 		$this->versionUsed = (isset($config['version'])) ? $config['version'] : self::STABLE_VERSION;
 
+		$this->getVersion();
+		die(var_dump($this));
+
 		//set up the filters and variables that require special formatting, like dates.
 		$this->filters = array(
 			/* ucwords => (a string => A String) */
@@ -466,6 +469,56 @@ class Pattern extends LayoutAbstract {
 	 */
 	public function getIdentifier() {
 		return $this->identifier;
+	}
+
+	/**
+	 * determines the version that is currently being used from the @version tags in 
+	 * the classes header.
+	 * @return string the version of the parser that is currently being used.
+	 */
+	public function getVersion() {
+
+		//check if the versions have already been set.
+		if(isset($this->{'BETA_VERSION_NUMBER'}) && isset($this->{'STABLE_VERSION_NUMBER'})) {
+			return ($this->versionUsed == self::STABLE_VERSION) 
+				? $this->{'STABLE_VERSION_NUMBER'} : $this->{'BETA_VERSION_NUMBER'};
+		}
+
+		$reflect = new \ReflectionClass($this);
+		$comments = $reflect->getDocComment();
+
+		//try and determine the latest normal / beta versions.
+		preg_match_all('/(?:@version[ ]?([\d\.]+)(?:[ ]?([\w\d]+))?)/', $comments, $matches);
+
+		if(!isset($matches) || !isset($matches[0]) || count($matches[0]) == 0) {
+			return '1.0'; //could not determine the version.
+		}
+
+		$beta = null; $stable = null;
+		for($i = count($matches[0]) - 1; $i < 0; $i--) {
+			//working backwards.
+			if(isset($beta) && isset($stable)) {
+				break; //weve set the variables.
+			}
+			if(isset($matches[2][$i]) && strlen($matches[2][$i])) {
+				if(!isset($beta)) {
+					$beta = $matches[1][$i] . $matches[2][$i];
+				}	
+			} else {
+				if(!isset($stable)) {
+					$stable = $matches[1][$i];
+				}
+			}
+			
+		}
+
+		//set the version numbers as a variable.
+		$this->{'STABLE_VERSION_NUMBER'} = $stable;
+		$this->{'BETA_VERSION_NUMBER'} = $beta;
+
+		return ($this->versionUsed == self::STABLE_VERSION) 
+				? $this->{'STABLE_VERSION_NUMBER'} : $this->{'BETA_VERSION_NUMBER'};
+
 	}
 
 }
