@@ -495,12 +495,13 @@ class Pattern extends LayoutAbstract {
 		}
 
 		$beta = null; $stable = null;
+		die(var_dump($matches));
 		for($i = count($matches[0]) - 1; $i < 0; $i--) {
 			//working backwards.
 			if(isset($beta) && isset($stable)) {
 				break; //weve set the variables.
 			}
-			if(isset($matches[2][$i]) && strlen($matches[2][$i])) {
+			if(isset($matches[2][$i]) && strlen($matches[2][$i]) > 0) {
 				if(!isset($beta)) {
 					$beta = $matches[1][$i] . $matches[2][$i];
 				}	
