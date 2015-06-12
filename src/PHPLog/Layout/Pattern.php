@@ -255,6 +255,18 @@ class Pattern extends LayoutAbstract {
 				$statement = str_replace($placeholder, $variable, $statement);
 
 			}
+		} else {
+			//check we dont have any syntax errors. ('i.e rogue %if {condition}% or %else% or %endif%')
+			if(preg_match('/(?:(?:'.$this->getIdentifier().'if ([\w\d]+)(?: (==|<|>|<=|>=) ([\w\d]+))?'.$this->getIdentifier().'))/',
+			 	$statement)) {
+				throw new \Exception('Syntax Error: if statement defined with no closing endif');
+			}
+			if(preg_match('/'.$this->getIdentifier().'else'.$this->getIdentifier().'/', $statement)) {
+				throw new \Exception('Syntax Error: else statement supplied without if/endif statement');
+			}
+			if(preg_match('/'.$this->getIdentifier().'endif'.$this->getIdentifier().'/', $statement)) {
+				throw new \Exception('Syntax Error: endif statement supplied without if statement');
+			}
 		}
 
 		return $this->parseStatement($event, $statement);
