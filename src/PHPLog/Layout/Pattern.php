@@ -215,6 +215,79 @@ class Pattern extends LayoutAbstract {
 		return $this->parseStatement($event, $this->pattern);
 	}
 
+	/**
+	 * parses the current log event into the pattern in which the log should be formatted.
+	 *
+	 * ### WARNING ### 
+	 * This parser is currently in the beta development state, and as such it is still
+	 * A work in development and should not be used in production code.
+	 * 
+	 * ### Options ###
+	 * a pattern can be any string format and contain any characters but anything prefixed with
+	 * the identifier variable will be replaced with the relevent variable or '' if that variable
+	 * does not exist. Variables will attempted to be pulled from the event object that is passed
+	 * into this method, (extra variables with custom names are assigned to this object at runtime)
+	 * and because of this there are some defined variables that have been statically set in the 
+	 * pattern parser to account for this. These are:
+	 *
+	 * %message - the message that was passed to the log.
+	 * %level - the string representation of the severity level for the log.
+	 * %date({format})* - the date that that the log was created, can optionally be formatted.
+	 * %logger - the name of the logger that generated the log.
+	 * %newline - outputs a PHP_EOL string.
+	 * %tab({amount})* - outputs a tab an amount can be defined to increase the size of the tab.
+	 *
+	 * Any other variables that are defined in the pattern will be treated as extra values. 
+	 * And obviously the '%' will be substituted with whatever identifier is defined on configuration.
+	 *
+	 * ### FILTERS ###
+	 * optional filters can be applied to variables in the pattern (apart from %newline and %tab)
+	 * which are applied to the variable. (maximum of two filters per variable) These include: 
+	 *
+	 * uc - applies ucwords to the value.
+	 * u - applies strtoupper to the value
+	 * l - applies strtolower to the value
+	 * nf - applies number_format to the value.
+	 * t - applies trim to the value.
+	 * lt - applies ltrim to the value.
+	 * rt - applies rtrim to the value.
+	 * e(delimiter) - seperates a word by a delimiter. so IS_NULL with e(_) becomes IS NULL
+	 *
+	 * These filters are applied by using the pipe operator in a variable. for example: %message|u
+	 *
+	 * ### VERSION 2 ###
+	 * Any variable that requires an argument (i.e %date{%format}) can now be passed another variable
+	 * which will also be resolved and passed to the approiate function that deals with applying arguments
+	 * to variables. i.e %format in %date{%format} will be resolved from the event as a variable and passed
+	 * to the function which formats the date.
+	 *
+	 * Filters are also allowed alphanumeric arguments in order to add more detailed customisation in using filters.
+	 * it also unlocks the possibility of using more complex filters. for example %cost|nf(2)|t will apply number_format
+	 * to the resolved %cost variable to 2 decimal places and then trim will be applies to that value.
+	 *
+	 * ### VERSION 2.1 ###
+	 * the Event now carries information for the location on where the log event was triggered. This information 
+	 * includes: 
+	 *
+	 * %line - the line number in the script that executed the log event.
+	 * %file - the name of the file that executed the log event.
+	 * %class - the class name of the object that executed the event.
+	 * %function - the function that the log event was called in.
+	 *
+	 * ### VERSION 3.0beta ###
+	 * the parser can now handle basic if/else statements in patterns. The variable in the
+	 * the condition is first resolved and then evaluated to determine if it is true or false.
+	 * The statement inside the if/else is then resolved based on this outcome and this is then
+	 * pushed back into the statement. We can only handle a single if/else sequence. (more than one can
+	 * be defined in the pattern, but there can be no nested if/else statements)
+	 *
+	 * ### KNOWN ISSUES / BUGS ###
+	 * - any nested if/else statements are not reported as an error, they are evaluated by
+	 *   the parser as a normal statement, and obviously this will break the parser.
+	 *
+	 * @param Event $event the event that we are attempting to log.
+	 * @return string the $event formatted to the provided pattern.
+	 */
 	public function betaParse(Event $event) {
 		//we need to first parse any if/else statements that are in the pattern.
 		preg_match_all($this->regex_if, $this->pattern, $matches);
@@ -249,6 +322,20 @@ class Pattern extends LayoutAbstract {
 
 				//get the if statement.
 				$if = (isset($else)) ? $matches[5][$i] : $matches[7][$i];
+
+				//check that the if or else does not currently contain any nested if/else statements.
+				preg_match_all($this->regex_if, $if, $ifMatches);
+				if(is_array($ifMatches) && isset($ifMatches[0]) && count($ifMatches[0]) > 0) {
+					throw new \Exception('Syntax Error: nested if/else sequence found.');
+				}
+
+				if(isset($else)) {
+					preg_match_all($this->regex_if, $else, $elseMatches);
+					if(is_array($elseMatches) && isset($elseMatches[0]) && count($elseMatches[0]) > 0) {
+						throw new \Exception('Syntax Error: nested if/else sequence found.');
+					}
+				}
+
 				$variable = ($exprTrue) ? $this->parseStatement($event, $if) 
 							: ((isset($else)) ? $this->parseStatement($event, $else) : '');
 
