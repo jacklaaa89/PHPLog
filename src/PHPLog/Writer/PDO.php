@@ -5,6 +5,7 @@ namespace PHPLog\Writer;
 use PHPLog\WriterAbstract;
 use PHPLog\Event;
 use PHPLog\Layout\Bind;
+use PHPLog\Configuration;
 
 class PDO extends WriterAbstract {
 
@@ -42,7 +43,7 @@ class PDO extends WriterAbstract {
 	 * 
 	 * for this writer to work we need a dsn, a username, password and a table name.
 	 */
-	public function __construct($config) {
+	public function __construct(Configuration $config) {
 
 		parent::__construct($config);
 
@@ -51,10 +52,11 @@ class PDO extends WriterAbstract {
 		}
 
 		$this->tableName = $config['tableName'];
-		$this->dsn = (isset($config['dsn'])) ? $config['dsn'] : "";
-		$this->username = (isset($config['username'])) ? $config['username'] : "";
-		$this->password = (isset($config['password'])) ? $config['password'] : "";
-		$this->insertStatement = (isset($config['insertStatement'])) ? $config['insertStatement'] : $this->insertStatement;
+
+		$this->dsn = $config->get('dsn', '');
+		$this->username = $config->get('username', '');
+		$this->password = $config->get('password', '');
+		$this->insertStatement = $config->get('insertStatement', $this->insertStatement);
 
 		try {
 			$this->connection = new \PDO($this->dsn, $this->username, $this->password);
@@ -64,8 +66,12 @@ class PDO extends WriterAbstract {
 		}
 
 		$this->insertStatement = str_replace(':table:', $this->tableName, $this->insertStatement);
-		$config['pattern'] = (!isset($config['pattern'])) ? $this->pattern : $config['pattern'];
-		$this->setLayout(new Bind($config));
+			
+		if(!isset($this->getConfig()->layout->pattern)) {
+			$this->getConfig()->layout->pattern = $this->pattern;
+		}
+
+		$this->setLayout(new Bind());
 
 	}
 	

@@ -6,6 +6,7 @@ use PHPLog\WriterAbstract;
 use PHPLog\Event;
 use PHPLog\Level;
 use PHPLog\Layout\Pattern;
+use PHPLog\Configuration;
 
 /**
  * A writer which outputs a block of log entries to email.
@@ -58,17 +59,18 @@ class Mail extends WriterAbstract {
 	 * emails in config.
 	 * @param array $config the configuration for this writer.
 	 */
-	public function __construct($config) {
+	public function __construct(Configuration $config) {
 
 		parent::__construct($config);
 
-		//check that we have the sub-array transport.
-		if(!isset($config['transport']) || !is_array($config['transport']) || count($config['transport']) == 0) {
-			throw new \Exception('no transport configuration provided.');
+		$transport = $config->transport;
+
+		if(!($transport instanceof Configuration) || count($transport) == 0) {
+			throw new \Exception('no transport config provided');
 		}
 
 		//check we have a transport type.
-		if(!isset($config['transport']['type']) || !in_array($config['transport']['type'], 
+		if(!isset($transport->type) || !in_array($transport->type, 
 				array(
 					Mail::TRANSPORT_TYPE_MAIL,
 					Mail::TRANSPORT_TYPE_SENDMAIL,
@@ -80,8 +82,8 @@ class Mail extends WriterAbstract {
 		}
 
 		//get the transport parameters.
-		$params = $config['transport']; unset($params['type']);
-		$type = $config['transport']['type'];
+		$params = clone $transport; unset($param->type);
+		$type = $tranport->type;
 
 		//check we have enough overall args.
 		if(count($params) == 0 && $type != Mail::TRANSPORT_TYPE_MAIL) {
@@ -152,17 +154,17 @@ class Mail extends WriterAbstract {
 		$this->subject = $config['subject'];
 
 		//finally see if the users set any custom threshold for just this writer.
-		$this->threshold = (array_key_exists('threshold', $config) && $config['threshold'] instanceof Level)
+		$this->threshold = ($config->threshold instanceof Level)
 			? $config['threshold']
 			: Level::all();
 
 
 		//set the layout.
-		if(!array_key_exists('pattern', $config)) {
-			$config['pattern'] = $this->pattern;
+		if(!isset($config->layout['pattern'])) {
+			$this->getConfig()->layout->pattern = $this->pattern;
 		}
 
-		$this->setLayout(new Pattern($config));
+		$this->setLayout(new Pattern());
 
 	}
 

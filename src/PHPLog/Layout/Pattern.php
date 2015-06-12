@@ -5,6 +5,7 @@ namespace PHPLog\Layout;
 use PHPLog\LayoutAbstract;
 use PHPLog\Event;
 use PHPLog\Exception\CompilerException;
+use PHPLog\Configuration;
 
 /**
  * This class formats a log based on a pattern that is provided to the configuration
@@ -36,15 +37,8 @@ class Pattern extends LayoutAbstract {
 	/* the identifier that starts a value placeholder in the pattern. */
 	private $identifier = '%';
 
-	/* the version the user has opted to use, default to stable version VERSION (as of writing 2.21) */
+	/* the version the user has opted to use, default to stable version VERSION (as of writing 2.2) */
 	private $versionUsed = self::STABLE_VERSION;
-
-	/** 
-	 * the old regex used to parse values into the pattern.
-	 * @version 1.1 - added some more identifiers for date/times in attributes.
-	 * @depreceated - this layout now uses the new regex pattern and this will be removed in version 3.
-	 */
-	//private $regex_old = '/(__ID__(\w+)(?:\{([\w\d\-\,\ \:\/]+)\})?(?:\|([\w]{1,2})(?:\|([\w]{1,2}))*)?)/';
 
 	/**
 	 * the regex used to parse values into the pattern.
@@ -65,27 +59,17 @@ class Pattern extends LayoutAbstract {
 	/* added some constant values. */
 	private $consts = array();
 
-	/**
-	 * @override
-	 * Constructor, initialises all values needed to parse patterns.
-	 * @param array $config the configuration for this layout.
-	 */
-	public function __construct($config) {
-		parent::__construct($config);
-
+	public function init(Configuration $config) {
 		//get configuration values passed from the user.
-		$this->pattern = (isset($config['pattern']) && strlen($config['pattern']) > 0) ? $config['pattern'] : 'LOG - %level - %message - %date';
-		$this->identifier = (isset($config['identifier']) && strlen($config['identifier']) > 0) ? $config['identifier'] : $this->identifier;
+
+		$this->pattern = $config->get('pattern', $this->pattern);
+		$this->identifier = $config->get('identifier', $this->identifier);
 
 		//format the regex's to parse variables from the pattern.
 		$this->regex = str_replace('__ID__', $this->identifier, $this->regex);
 		$this->regex_if = str_replace('__ID__', $this->identifier, $this->regex_if);
 
-		//determine what pattern parser version to use, defaults to the latest stable version.
-		$this->versionUsed = (isset($config['version'])) ? $config['version'] : self::STABLE_VERSION;
-
-		$this->getVersion();
-		die(var_dump($this));
+		$this->versionUsed = $config->get('version', self::STABLE_VERSION);
 
 		//set up the filters and variables that require special formatting, like dates.
 		$this->filters = array(
@@ -153,8 +137,6 @@ class Pattern extends LayoutAbstract {
 				return $value;
 			}
 		);
-
-		
 	}
 
 	/**
@@ -496,7 +478,7 @@ class Pattern extends LayoutAbstract {
 
 		$beta = null; $stable = null;
 		for($i = count($matches[0]) - 1; $i > 0; $i--) {
-			
+
 			//working backwards.
 			if(isset($beta) && isset($stable)) {
 				break; //weve set the variables.

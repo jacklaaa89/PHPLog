@@ -5,6 +5,7 @@ namespace PHPLog\Writer;
 use PHPLog\WriterAbstract;
 use PHPLog\Event;
 use PHPLog\Layout\Pattern;
+use PHPLog\Configuration;
 
 /**
  * This writer writes a log to the screen using echo using a defined pattern.
@@ -17,11 +18,13 @@ class EchoWriter extends WriterAbstract {
 	 * Constructor - initializes the writer and setsup the layout.
 	 * @param array config the config for this writer.
 	 */
-	public function __construct($config) {
+	public function __construct(Configuration $config) {
 		parent::__construct($config);
 		$pattern = 'LOG - %level - %message|u - %date';
-		$config['pattern'] = (isset($config['pattern']) && strlen($config['pattern']) > 0) ? $config['pattern'] : $pattern;
-		$this->setLayout(new Pattern($config));
+		if(!isset($this->getConfig()->layout->pattern)) {
+			$this->getConfig()->layout->pattern = $pattern;
+		}
+		$this->setLayout(new Pattern());
 	}
 	
 	/**

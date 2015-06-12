@@ -6,6 +6,7 @@ use PHPLog\WriterAbstract;
 use PHPLog\Event;
 use PHPLog\Layout\Pattern;
 use PHPLog\Level;
+use PHPLog\Configuration;
 
 /**
  * This writer logs to the system logger.
@@ -40,16 +41,17 @@ class Syslog extends WriterAbstract {
 	 * Constructor - initializes the writer and parses the options into the syslog equivilents
 	 * @param array $config the configuration for this writer.
 	 */
-	public function __construct($config) {
+	public function __construct(Configuration $config) {
 		parent::__construct($config);
-		$this->options = (isset($config['options'])) ? $config['options'] : 'PID|CONS';
-		$this->facility = (isset($config['options'])) ? $config['facility'] : 'USER';
-		$this->applicationIdentifier = (isset($config['ident'])) ? $config['ident'] : $this->applicationIdentifier;
-		if(!isset($config['pattern'])) {
-			$config['pattern'] = $this->pattern;
+
+		$this->options = $this->getConfig()->get('options', 'PID|CONS');
+		$this->facility = $this->getConfig()->get('facility', 'USER');
+		$this->applicationIdentifier = $this->getConfig()->get('ident', $this->applicationIdentifier);
+		if(!isset($this->getConfig()->layout->pattern)) {
+			$this->getConfig()->layout->pattern = $this->pattern;
 		}
 
-		$this->setLayout(new Pattern($config));
+		$this->setLayout(new Pattern());
 
 		$this->opt = $this->getOption($this->options);
 		$this->fac = $this->getOption($this->facility);

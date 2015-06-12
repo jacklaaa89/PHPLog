@@ -4,6 +4,7 @@ namespace PHPLog\Writer;
 
 use PHPLog\WriterAbstract;
 use PHPLog\Event;
+use PHPLog\Configuration;
 
 /**
  * A writer which completely ignores all incoming log events. Mainly for use in 
@@ -13,6 +14,8 @@ use PHPLog\Event;
  * @author Jack Timblin
  */
 class Null extends WriterAbstract {
+
+	public function init(Configuration $config) {}
 
 	/**
 	 * This renderer completely disables logging, and just returns true.

@@ -5,6 +5,7 @@ namespace PHPLog;
 use PHPLog\Event;
 use PHPLog\Extension;
 use PHPLog\Renderer;
+use PHPLog\Configuration;
 
 /**
  * Base class for all layout implementations.
@@ -15,9 +16,12 @@ abstract class LayoutAbstract extends Extension {
 
 	protected $config;
 
-	public function __construct($config) {
-		parent::__construct();
-		$this->config = $config;
+	/**
+	 * returns the configuration for this layout.
+	 * @return Configuration the layouts configuration.
+	 */
+	public function getConfig() {
+		return $this->config;
 	}
 	
 	/** 
@@ -26,6 +30,12 @@ abstract class LayoutAbstract extends Extension {
 	 * @return mixed the parsed event in the structure of the layout itself.
 	 */
 	public abstract function parse(Event $event);
+
+	/**
+	 * initializes the layout, by passing the configuration through from the writer.
+	 * @param Configuration $config the configuration to pass through.
+	 */
+	public abstract function init(Configuration $config);
 
 	/**
 	 * attempts to render a variable to push into a log.

@@ -5,6 +5,7 @@ namespace PHPLog\Writer;
 use PHPLog\WriterAbstract;
 use PHPLog\Event;
 use PHPLog\Layout\Pattern;
+use PHPLog\Configuration;
 
 /**
  * a writer which writes to a file file location.
@@ -30,12 +31,12 @@ class File extends WriterAbstract {
 	 * Constructor - initializes the pattern and set the required variables. 
 	 * @param array $config the configutation for this writer.
 	 */
-	public function __construct($config) {
+	public function __construct(Configuration $config) {
 		parent::__construct($config);
-		$this->fileLocation = (isset($config['file'])) ? $config['file'] : '';
-		$this->append = (isset($config['append'])) ? $config['append'] : true;
-		$this->locking = (isset($config['locking'])) ? $config['locking'] : true;
-		$this->setLayout(new Pattern($config));
+		$this->fileLocation = $config->get('file', '');
+		$this->append = $config->get('append', true);
+		$this->locking = $config->get('locking', true);
+		$this->setLayout(new Pattern());
 	}
 
 	/**

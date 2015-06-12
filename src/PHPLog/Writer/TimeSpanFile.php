@@ -5,6 +5,7 @@ namespace PHPLog\Writer;
 use PHPLog\Writer\File;
 use PHPLog\Event;
 use PHPLog\Layout\FileNamePattern;
+use PHPLog\Configuration;
 
 /**
  * An extended File writer, with the added functionality of generating a new file
@@ -43,10 +44,12 @@ class TimeSpanFile extends File {
 	 * the timespan
 	 * @param array $config the configuration for this writer.
 	 */
-	public function __construct($config) {
+	public function __construct(Configuration $config) {
 		parent::__construct($config); //sort out the layout and file location etc.
 		//set timespan, default is daily.
-		$this->timespan = (isset($config['timespan'])) ? $config['timespan'] : TimeSpanFile::DAILY;
+
+		$timespan = $this->getConfig()->timespan;
+		$this->timespan = (isset($timespan)) ? $timespan : TimeSpanFile::DAILY;
 	}
 
 	/**

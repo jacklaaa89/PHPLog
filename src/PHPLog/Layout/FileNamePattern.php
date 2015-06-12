@@ -4,6 +4,7 @@ namespace PHPLog\Layout;
 
 use PHPLog\Layout\Pattern;
 use PHPLog\Event;
+use PHPLog\Configuration;
 
 /** 
  * An expansion of the Pattern class to not only allow for parsing a file location
@@ -32,18 +33,13 @@ class FileNamePattern extends Pattern {
 	/* the file location to update. */
 	protected $fileLocation;
 
-	/**
-	 * Constructor - initializes the Pattern layout and then adds config specific
-	 * of this layout
-	 * @param array $config the configuration for this layout.
-	 */
-	public function __construct($config) {
-		$this->pattern = (isset($config['pattern'])) ? $config['pattern'] : $this->pattern;
-		$config['pattern'] = $this->pattern;
-		parent::__construct($config);
-		$this->fileLocation = (isset($config['file'])) ? $config['file'] : '';
-		$this->dateFormat = (isset($config['dateFormat'])) ? $config['dateFormat'] : $this->dateFormat;
-
+	public function init(Configuration $config) {
+		if(!isset($config->pattern)) {
+			$config->pattern = $this->pattern;
+		}
+		parent::init($config);
+		$this->fileLocation = $config->get('file', '');
+		$this->dateFormat = $config->get('dateFormat', $this->dateFormat);
 	}
 
 	/**

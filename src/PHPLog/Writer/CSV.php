@@ -6,6 +6,7 @@ namespace PHPLog\Writer;
 use PHPLog\Writer\File;
 use PHPLog\Event;
 use PHPLog\Layout\Bind;
+use PHPLog\Configuration;
 
 /**
  * an extension of a file writer which is specifically defined to write logs to a csv file.
@@ -24,11 +25,11 @@ class CSV extends File {
 	 * Constructor - initializes the writer.
 	 * @param array $config the configuration for this writer.
 	 */
-	public function __construct($config) {
+	public function __construct(Configuration $config) {
 		parent::__construct($config);
-		$this->fileLocation = (isset($config['file'])) ? $config['file'] : null;
-		$this->delimiter = (isset($config['csvDelimiter'])) ? $config['csvDelimiter'] : ',';
-		$this->setLayout(new Bind($config));
+		$this->fileLocation = $config->get('file', null);
+		$this->delimiter = $config->get('delimiter', ',');
+		$this->setLayout(new Bind());
 	}
 
 	/** 

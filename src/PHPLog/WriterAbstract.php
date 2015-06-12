@@ -5,6 +5,7 @@ namespace PHPLog;
 use PHPLog\Event;
 use PHPLog\Extension;
 use PHPLog\LayoutAbstract;
+use PHPLog\Configuration;
 
 /**
  * Base class for all writer implementations.
@@ -23,8 +24,11 @@ abstract class WriterAbstract extends Extension {
 	 * Constructor - base initialisation for a writer instance.
 	 * @param array $config the configuration for this writer instance.
 	 */
-	public function __construct($config) {
+	public function __construct(Configuration $config) {
 		parent::__construct();
+		if(!isset($config->layout) || !($config->layout instanceof Configuration)) {
+			$config->layout =  new Configuration(array()); //empty config.
+		}
 		$this->config = $config;
 	}
 
@@ -67,6 +71,7 @@ abstract class WriterAbstract extends Extension {
 	 */
 	public function setLayout(LayoutAbstract $layout) {
 		$this->layout = $layout;
+		$this->layout->init($this->config->layout);
 	}
 
 	/**
