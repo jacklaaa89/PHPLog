@@ -15,6 +15,7 @@ use PHPLog\Configuration;
  * @version 2.2 - now utilizes renderers to format variables from objects to strings.
  * @version 3.0beta - added functionality for if/else statement in patterns.
  * @version 3.0beta2 - added syntax error capturing support.
+ * @version 3.0beta3 - utilizes the new configuration model for layouts and writers.
  * @author Jack Timblin
  */
 class Pattern extends LayoutAbstract {

@@ -42,6 +42,13 @@ class Configuration implements \ArrayAccess, \Countable {
 		return $this->{$index};
 	}
 
+	/**
+	 * gets a variable assigned to the config, if its not defined
+	 * the default value is returned.
+	 * @param mixed $index the value to get.
+	 * @param mixed $defaultValue the value to return if the $index value is not defined.
+	 * @return mixed the $index value or if that not defined the $defaultValue
+	 */
 	public function get($index, $defaultValue = null) {
 		if(!$this->offsetExists($index)) {
 			return $defaultValue;
