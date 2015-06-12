@@ -495,8 +495,9 @@ class Pattern extends LayoutAbstract {
 		}
 
 		$beta = null; $stable = null;
-		die(var_dump($matches));
 		for($i = count($matches[0]) - 1; $i < 0; $i--) {
+			die(var_dump($matches[0][$i]));
+
 			//working backwards.
 			if(isset($beta) && isset($stable)) {
 				break; //weve set the variables.
