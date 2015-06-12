@@ -5,6 +5,7 @@ namespace PHPLog;
 use PHPLog\Logger;
 use PHPLog\Level;
 use PHPLog\Writer\EchoWriter;
+use PHPLog\Configuration;
 
 /**
  * An instance of a Root logger, which is effectively just a normal
@@ -27,7 +28,7 @@ class Root extends Logger {
 			$level = Level::all();
 		}
 		$this->setLevel($level);
-		$this->addWriter(new EchoWriter(array()));
+		$this->addWriter(new EchoWriter(new Configuration(array())));
 	}
 
 }
