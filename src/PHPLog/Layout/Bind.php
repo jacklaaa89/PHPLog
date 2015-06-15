@@ -30,6 +30,9 @@ class Bind extends Pattern {
 	 * @see PHPLog\LayoutAbstract::init()
 	 */
 	public function init(Configuration $config) {
+
+		die(var_dump($config));
+
 		parent::init($config);
 
 		$this->delimiter = $config->get('delimiter', $this->delimiter);

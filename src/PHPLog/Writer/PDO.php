@@ -69,8 +69,6 @@ class PDO extends WriterAbstract {
 		if(!isset($this->getConfig()->layout->pattern)) {
 			$this->getConfig()->layout->pattern = $this->pattern;
 		}
-
-		die(var_dump($this->getConfig()->layout));
 		
 		$this->setLayout(new Bind());
 
