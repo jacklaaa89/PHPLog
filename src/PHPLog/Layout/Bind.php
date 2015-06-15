@@ -51,7 +51,6 @@ class Bind extends Pattern {
 			if(!isset($matches[1])) {
 				$this->warn('An invalid key was defined.');
 			}
-			$value = $matches[1];
 		}
 	}
 
