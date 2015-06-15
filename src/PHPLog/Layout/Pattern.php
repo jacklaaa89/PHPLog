@@ -441,8 +441,6 @@ class Pattern extends LayoutAbstract {
 	public function parseStatement(Event $event, $statement) {
 		//parse the variables from the event into the provided pattern.
 		preg_match_all($this->regex, $statement, $matches);
-		
-		die(var_dump($matches));
 
 		//check have matches.
 		if(count($matches) == 0 || !isset($matches[2]) || count($matches[2]) == 0) {
