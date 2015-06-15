@@ -31,8 +31,7 @@ class File extends WriterAbstract {
 	 * Constructor - initializes the pattern and set the required variables. 
 	 * @param array $config the configutation for this writer.
 	 */
-	public function __construct(Configuration $config) {
-		parent::__construct($config);
+	public function init(Configuration $config) {
 		$this->fileLocation = $config->get('file', '');
 		$this->append = $config->get('append', true);
 		$this->locking = $config->get('locking', true);

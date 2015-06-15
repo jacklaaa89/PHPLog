@@ -24,7 +24,7 @@ class LevelMatch extends FilterAbstract {
 	 * Constructor - initializes the filter.
 	 * @param array $config the configuration for this filter.
 	 */
-	public function __construct(Configuration $config) {
+	public function init(Configuration $config) {
 
 		$this->levelToMatch = $config->get('levelToMatch', null, function($levelToMatch) {
 			return ($levelToMatch instanceof Level);

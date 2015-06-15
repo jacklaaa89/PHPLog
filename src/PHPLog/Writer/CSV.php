@@ -25,8 +25,8 @@ class CSV extends File {
 	 * Constructor - initializes the writer.
 	 * @param array $config the configuration for this writer.
 	 */
-	public function __construct(Configuration $config) {
-		parent::__construct($config);
+	public function init(Configuration $config) {
+		parent::init($config);
 		$this->fileLocation = $config->get('file', null);
 		$this->delimiter = $config->get('delimiter', ',');
 		$this->setLayout(new Bind());

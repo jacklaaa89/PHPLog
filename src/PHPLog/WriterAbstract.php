@@ -24,13 +24,29 @@ abstract class WriterAbstract extends Extension {
 	 * Constructor - base initialisation for a writer instance.
 	 * @param array $config the configuration for this writer instance.
 	 */
-	public function __construct(Configuration $config) {
+	public function __construct($config = array()) {
 		parent::__construct();
+
+		if(!is_array($config)) {
+			throw new \Exception('Configuration is of wrong type.');
+		}
+
+		$config = new Configuration($config);
+
 		if(!isset($config->layout) || !($config->layout instanceof Configuration)) {
 			$config->layout =  new Configuration(array()); //empty config.
 		}
 		$this->config = $config;
+
+		$this->init($config);
+
 	}
+
+	/**
+	 * used to initialize the writer adapter with some configuration.
+	 * @param Configuration $config the configuration for this writer.
+	 */
+	public abstract function init(Configuration $config);
 
 	/**
 	 * returns the configuration passed to this writer.

@@ -59,9 +59,7 @@ class Mail extends WriterAbstract {
 	 * emails in config.
 	 * @param array $config the configuration for this writer.
 	 */
-	public function __construct(Configuration $config) {
-
-		parent::__construct($config);
+	public function init(Configuration $config) {
 
 		$transport = $config->transport;
 

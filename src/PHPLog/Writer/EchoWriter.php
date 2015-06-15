@@ -18,8 +18,7 @@ class EchoWriter extends WriterAbstract {
 	 * Constructor - initializes the writer and setsup the layout.
 	 * @param array config the config for this writer.
 	 */
-	public function __construct(Configuration $config) {
-		parent::__construct($config);
+	public function init(Configuration $config) {
 		$pattern = 'LOG - %level - %message|u - %date';
 		if(!isset($this->getConfig()->layout->pattern)) {
 			$this->getConfig()->layout->pattern = $pattern;

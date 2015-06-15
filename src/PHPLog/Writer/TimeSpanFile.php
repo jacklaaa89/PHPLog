@@ -44,8 +44,8 @@ class TimeSpanFile extends File {
 	 * the timespan
 	 * @param array $config the configuration for this writer.
 	 */
-	public function __construct(Configuration $config) {
-		parent::__construct($config); //sort out the layout and file location etc.
+	public function init(Configuration $config) {
+		parent::init($config); //sort out the layout and file location etc.
 		//set timespan, default is daily.
 
 		$timespan = $this->getConfig()->timespan;

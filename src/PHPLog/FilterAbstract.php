@@ -40,11 +40,28 @@ abstract class FilterAbstract {
 	const DENY = -1;
 
 	/**
+	 * Constructor - initializes the filter, and converts the array config into 
+	 * a Configuration object.
+	 * @param array $config [optional] the configuration for this object.
+	 */
+	public function __construct($config = array()) {
+		if(!is_array($config)) {
+			throw new \Exception('Configuration is of wrong type.');
+		}
+
+		$config = new Configuration($config);
+
+		$this->config = $config;
+
+		$this->init($config);
+	}
+
+	/**
 	 * initializes the filter, this is required as 9/10 filters will
 	 * need some sort of configuration.
 	 * @param Configuration $config the configuration for the filter.
 	 */
-	public abstract function __construct(Configuration $config);
+	public abstract function init(Configuration $config);
 
 	/**
 	 * This is the function filters should override to determine if a

@@ -41,9 +41,8 @@ class Syslog extends WriterAbstract {
 	 * Constructor - initializes the writer and parses the options into the syslog equivilents
 	 * @param array $config the configuration for this writer.
 	 */
-	public function __construct(Configuration $config) {
-		parent::__construct($config);
-
+	public function init(Configuration $config) {
+		
 		$this->options = $this->getConfig()->get('options', 'PID|CONS');
 		$this->facility = $this->getConfig()->get('facility', 'USER');
 		$this->applicationIdentifier = $this->getConfig()->get('ident', $this->applicationIdentifier);

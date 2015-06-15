@@ -43,9 +43,7 @@ class PDO extends WriterAbstract {
 	 * 
 	 * for this writer to work we need a dsn, a username, password and a table name.
 	 */
-	public function __construct(Configuration $config) {
-
-		parent::__construct($config);
+	public function init(Configuration $config) {
 
 		if(!isset($config['tableName']) || strlen($config['tableName']) == 0) {
 			throw new \Exception('table name is required');
