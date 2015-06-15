@@ -84,6 +84,8 @@ class Pattern extends LayoutAbstract {
 
 		$this->versionUsed = $config->get('version', self::STABLE_VERSION);
 
+		die(var_dump($this));
+
 		//set up the filters and variables that require special formatting, like dates.
 		$this->filters = array(
 			/* ucwords => (a string => A String) */
