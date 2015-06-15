@@ -30,11 +30,9 @@ abstract class WriterAbstract extends Extension {
 		if(!is_array($config)) {
 			throw new \Exception('Configuration is of wrong type.');
 		}
-		
+
 
 		$config = new Configuration($config);
-
-		die(var_dump($config));
 
 		if(!isset($config->layout) || !($config->layout instanceof Configuration)) {
 			$config->layout =  new Configuration(array()); //empty config.
