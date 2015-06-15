@@ -43,6 +43,7 @@ class Bind extends Pattern {
 
 		$this->pattern = $config->pattern;
 		$this->keys = explode($this->delimiter, $this->pattern);
+		die(var_dump($this->keys));
 		foreach($this->keys as &$value) {
 			$value = trim($value); //remove any whitespace from either side.
 			preg_match('/'.$this->getIdentifier().'(\w+)/', $value, $matches);
