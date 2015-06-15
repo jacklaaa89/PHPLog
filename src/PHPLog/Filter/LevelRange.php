@@ -26,7 +26,7 @@ class LevelRange extends FilterAbstract {
 	 * Constructor - initializes the filter.
 	 * @param array $config the configuration for this filter.
 	 */
-	public function __construct($config = new Configuration(array())) {
+	public function __construct(Configuration $config) {
 
 		$this->levelMin = $config->get('levelMin', Level::trace(), function($levelMin) {
 			return ($levelMin instanceof Level);

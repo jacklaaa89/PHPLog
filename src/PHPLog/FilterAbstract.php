@@ -44,7 +44,7 @@ abstract class FilterAbstract {
 	 * need some sort of configuration.
 	 * @param Configuration $config the configuration for the filter.
 	 */
-	public abstract function __construct($config = new Configuration(array()));
+	public abstract function __construct(Configuration $config);
 
 	/**
 	 * This is the function filters should override to determine if a

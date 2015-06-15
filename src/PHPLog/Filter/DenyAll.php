@@ -18,7 +18,7 @@ class DenyAll extends FilterAbstract {
 	 * Constructor - initializes the filter.
 	 * @param array $config the configuration for this filter.
 	 */
-	public function __construct($config = new Configuration(array())) {}
+	public function __construct(Configuration $config) {}
 
 	/**
 	 * @see \PHPLog\FilterAbstract::decide()

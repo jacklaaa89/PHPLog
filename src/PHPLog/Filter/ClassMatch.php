@@ -25,7 +25,7 @@ class ClassMatch extends FilterAbstract {
 	 * Constructor - initializes the filter.
 	 * @param array $config the configuration for this filter.
 	 */
-	public function __construct($config = new Configuration(array())) {
+	public function __construct(Configuration $config) {
 
 		$this->className = $config->get('class', null);
 		$this->className = (isset($this->className)) ? trim($this->className, ' \\') : null;
