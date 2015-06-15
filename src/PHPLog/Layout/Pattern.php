@@ -196,6 +196,8 @@ class Pattern extends LayoutAbstract {
 			}
 		}
 
+		die(var_dump($config));
+
 	}
 
 	/**
