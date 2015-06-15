@@ -84,8 +84,6 @@ class Pattern extends LayoutAbstract {
 
 		$this->versionUsed = $config->get('version', self::STABLE_VERSION);
 
-		die(var_dump($this));
-
 		//set up the filters and variables that require special formatting, like dates.
 		$this->filters = array(
 			/* ucwords => (a string => A String) */
@@ -494,6 +492,8 @@ class Pattern extends LayoutAbstract {
 					$att = ($attr !== null) ? $att : '';
 					$att = (!is_string($att)) ? (string) $att : $att;
 				}
+
+				die(var_dump($att));
 
 				$att = $this->formatArgs($att);
 				$var = $func($var, $att);
