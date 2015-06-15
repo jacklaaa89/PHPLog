@@ -28,7 +28,7 @@ class Root extends Logger {
 			$level = Level::all();
 		}
 		$this->setLevel($level);
-		$this->addWriter(new EchoWriter());
+		//$this->addWriter(new EchoWriter());
 	}
 
 }

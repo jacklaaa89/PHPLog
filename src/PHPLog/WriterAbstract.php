@@ -24,13 +24,13 @@ abstract class WriterAbstract extends Extension {
 	 * Constructor - base initialisation for a writer instance.
 	 * @param array $config the configuration for this writer instance.
 	 */
-	public function __construct($config) {
+	public function __construct($config = array()) {
 		parent::__construct();
 
 		if(!is_array($config)) {
 			throw new \Exception('Configuration is of wrong type.');
 		}
-
+		
 		die(var_dump($config));
 
 		$config = new Configuration($config);
