@@ -45,7 +45,6 @@ class PDO extends WriterAbstract {
 	 */
 	public function init(Configuration $config) {
 
-		die(var_dump($config));
 
 		if(!isset($config['tableName']) || strlen($config['tableName']) == 0) {
 			throw new \Exception('table name is required');
@@ -71,6 +70,8 @@ class PDO extends WriterAbstract {
 			$this->getConfig()->layout->pattern = $this->pattern;
 		}
 
+		die(var_dump($this->getConfig()->layout));
+		
 		$this->setLayout(new Bind());
 
 	}

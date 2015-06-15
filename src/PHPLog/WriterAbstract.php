@@ -31,7 +31,6 @@ abstract class WriterAbstract extends Extension {
 			throw new \Exception('Configuration is of wrong type.');
 		}
 
-
 		$config = new Configuration($config);
 
 		if(!isset($config->layout) || !($config->layout instanceof Configuration)) {
