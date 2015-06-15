@@ -4,11 +4,14 @@ namespace PHPLog;
 
 /**
  * Global Configuration class used for configuration.
- * variables can be accessed with either the '->' operator or as an array.
+ * variables can be accessed with either the '->' operator or as an array key i.e ($obj['key']).
  * @version 1
+ * @version 2 - Configuration now implements \Iterator so configuration can be iterated over.
  * @author Jack Timblin
  */
-class Configuration implements \ArrayAccess, \Countable {
+class Configuration implements \ArrayAccess, \Countable, \Iterator {
+
+	private $position = 0;
 	
 	/**
 	 * Constructor - assigns all of the variables to this configuration object
@@ -19,6 +22,7 @@ class Configuration implements \ArrayAccess, \Countable {
 		foreach($config as $key => $value) {
 			$this->offsetSet($key, $value);
 		}
+		$this->position = 0;
 	}
 
 	/**
@@ -90,6 +94,47 @@ class Configuration implements \ArrayAccess, \Countable {
 	 */
 	public function count() {
 		return count(get_object_vars($this));
+	}
+
+	/**
+	 * @see \Iterator::rewind()
+	 */
+	public function rewind() {
+		$this->position = 0;
+	}
+
+	/**
+	 * @see \Iterator::current()
+	 */
+	public function current() {
+		$vars = get_object_vars($this);
+		$keys = (count($vars) > 0) ? array_keys($vars) : array();
+		return (isset($vars[$keys[$this->position]])) ? $vars[$keys[$this->position]] : null;
+	}
+
+	/**
+	 * @see \Iterator::key()
+	 */
+	public function key() {
+		$vars = get_object_vars($this);
+		$keys = (count($vars) > 0) ? array_keys($vars) : array();
+		return (isset($keys[$this->position])) ? $keys[$this->position] : null;
+	}
+
+	/**
+	 * @see \Iterator::next()
+	 */
+	public function next() {
+		++$this->position;
+	}
+
+	/**
+	 * @see \Iterator::valid()
+	 */
+	public function valid() {
+		$vars = get_object_vars($this);
+		$keys = (count($vars) > 0) ? array_keys($vars) : array();
+		return (isset($keys[$this->position]));
 	}
 
 }

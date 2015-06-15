@@ -16,6 +16,7 @@ use PHPLog\Configuration;
  * @version 3.0beta - added functionality for if/else statement in patterns.
  * @version 3.0beta2 - added syntax error capturing support.
  * @version 3.0beta3 - utilizes the new configuration model for layouts and writers.
+ * @version 3.0beta4 - added the functionality to allow for custom, filters and consts etc in the parser.
  * @author Jack Timblin
  */
 class Pattern extends LayoutAbstract {
@@ -143,6 +144,18 @@ class Pattern extends LayoutAbstract {
 				return $value;
 			}
 		);
+
+		//check the configuration for any custom consts, filters or special values.
+		//defaultly defined functions cannot be overridden and will be ignored.
+		$filters = $config->get('filters', new Configuration(array()));
+
+		foreach($filters as $name => $function) {
+			if($function instanceof \Closure) {
+				$reflection = new \ReflectionFunction($function);
+				die(var_dump($reflection->getParameters()));
+			}
+		}
+
 	}
 
 	/**
