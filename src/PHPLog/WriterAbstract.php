@@ -24,7 +24,7 @@ abstract class WriterAbstract extends Extension {
 	 * Constructor - base initialisation for a writer instance.
 	 * @param array $config the configuration for this writer instance.
 	 */
-	public function __construct($config = array()) {
+	public function __construct($config) {
 		parent::__construct();
 
 		if(!is_array($config)) {
@@ -32,7 +32,7 @@ abstract class WriterAbstract extends Extension {
 		}
 
 		die(var_dump($config));
-		
+
 		$config = new Configuration($config);
 
 
