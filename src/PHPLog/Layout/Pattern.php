@@ -52,7 +52,7 @@ class Pattern extends LayoutAbstract {
 	 * variables will also have to be wrapped in '' quotes so we can parse them correctly.
 	 * @todo - allow escaping of "'" in method parameters.
 	 */
-	private $regex = '/(__ID__([\w\d]+)(?:\{([\w\d\-,\.\' \:\/\\\]+|(?:(__ID__)([\w\d]+)))\})?(?:\|(?:([\w]{1,2})(?:\(([\w\d\-,\.\' \:\/\\]+)?\))?)(?:\|([\w\d]{1,2})(?:\(([\w\d\-,\.\' \:\/\\]+)?\))?)?)?)/';
+	private $regex = '/(__ID__([\w\d]+)(?:\{([\\\ \w\d\-,\.\'\:\/]+|(?:(__ID__)([\w\d]+)))\})?(?:\|(?:([\w]{1,2})(?:\(([\w\d\-,\.\'\\\ \:\/]+)?\))?)(?:\|([\w\d]{1,2})(?:\(([\w\d\-,\.\'\\\ \:\/]+)?\))?)?)?)/';
 
 	/**
 	 * the regex to allow for a single if/else statement in patterns.
