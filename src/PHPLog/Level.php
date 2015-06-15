@@ -138,6 +138,14 @@ class Level {
 		return new Level(Level::ALL, 'ALL');
 	}
 
+	/**
+	 * generates a new trace level object.
+	 * @return Level a new level with the trace severity.
+	 */
+	public static function trace() {
+		return new Level(Level::TRACE, 'TRACE');
+	}
+
 
 
 }
