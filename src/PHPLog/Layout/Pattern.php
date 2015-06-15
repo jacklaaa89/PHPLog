@@ -148,11 +148,42 @@ class Pattern extends LayoutAbstract {
 		//check the configuration for any custom consts, filters or special values.
 		//defaultly defined functions cannot be overridden and will be ignored.
 		$filters = $config->get('filters', new Configuration(array()));
+		$consts = $config->get('consts', new Configuration(array()));
+		$variableFunctions = $config->get('variableFunctions', new Configuration(array()));
 
+		//add custom filters.
 		foreach($filters as $name => $function) {
 			if($function instanceof \Closure) {
 				$reflection = new \ReflectionFunction($function);
-				die(var_dump($reflection->getParameters()));
+				if($reflection->getNumberOfRequiredParameters() >= 2) {
+					//only the first two params are used at the minute.
+					if(!array_key_exists($name, $this->filters)) {
+						$this->filters[$name] = $function;
+					}
+				}
+			}
+		}
+
+		//add custom specialValues.
+		foreach($variableFunctions as $name => $function) {
+			if($function instanceof \Closure) {
+				$reflection = new \ReflectionFunction($function);
+				if($reflection->getNumberOfRequiredParameters() >= 2) {
+					//only the first two params are used at the minute.
+					if(!array_key_exists($name, $this->specialValues)) {
+						$this->specialValues[$name] = $function;
+					}
+				}
+			}
+		}
+
+		//add custom consts.
+		foreach($consts as $name => $value) {
+			if(isset($value) && is_string($value)) {
+				//only the first two params are used at the minute.
+				if(!array_key_exists($name, $this->consts)) {
+					$this->consts[$name] = $value;
+				}
 			}
 		}
 
