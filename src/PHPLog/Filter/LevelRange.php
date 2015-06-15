@@ -26,12 +26,17 @@ class LevelRange extends FilterAbstract {
 	 * Constructor - initializes the filter.
 	 * @param array $config the configuration for this filter.
 	 */
-	public function __construct($config = array()) {
-		$this->levelMin = (isset($config['levelMin']) && $config['levelMin'] instanceof Level) 
-			? $config['levelMin'] : Level::trace();
-			$this->levelMax = (isset($config['levelMax']) && $config['levelMax'] instanceof Level) 
-			? $config['levelMax'] : Level::fatal();
-		$this->acceptOnMatch = (isset($config['acceptOnMatch'])) ? $config['acceptOnMatch'] : true;
+	public function __construct($config = new Configuration(array())) {
+
+		$this->levelMin = $config->get('levelMin', Level::trace(), function($levelMin) {
+			return ($levelMin instanceof Level);
+		});
+
+		$this->levelMax = $config->get('levelMax', Level::fatal(), function($levelMax) {
+			return ($levelMax instanceof Level);
+		});
+
+		$this->acceptOnMatch = $config->get('acceptOnMatch', true);
 	}
 
 	/**

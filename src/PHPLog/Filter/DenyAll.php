@@ -4,6 +4,7 @@ namespace PHPLog\Filter;
 
 use PHPLog\Event;
 use PHPLog\FilterAbstract;
+use PHPLog\Configuration;
 
 /**
  * Filter which denys all logging events, good at the end of the filter chain when
@@ -17,7 +18,7 @@ class DenyAll extends FilterAbstract {
 	 * Constructor - initializes the filter.
 	 * @param array $config the configuration for this filter.
 	 */
-	public function __construct($config = array()) {}
+	public function __construct($config = new Configuration(array())) {}
 
 	/**
 	 * @see \PHPLog\FilterAbstract::decide()

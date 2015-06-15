@@ -5,6 +5,7 @@ namespace PHPLog\Filter;
 use PHPLog\Event;
 use PHPLog\Level;
 use PHPLog\FilterAbstract;
+use PHPLog\Configuration;
 
 /**
  * filter used to match an exact level from an event.
@@ -23,10 +24,13 @@ class LevelMatch extends FilterAbstract {
 	 * Constructor - initializes the filter.
 	 * @param array $config the configuration for this filter.
 	 */
-	public function __construct($config = array()) {
-		$this->levelToMatch = (isset($config['levelToMatch']) && $config['levelToMatch'] instanceof Level) 
-			? $config['levelToMatch'] : null;
-		$this->acceptOnMatch = (isset($config['acceptOnMatch'])) ? $config['acceptOnMatch'] : true;
+	public function __construct($config = new Configuration(array())) {
+
+		$this->levelToMatch = $config->get('levelToMatch', null, function($levelToMatch) {
+			return ($levelToMatch instanceof Level);
+		});
+
+		$this->acceptOnMatch = $config->get('acceptOnMatch', true);
 	}
 
 	/**

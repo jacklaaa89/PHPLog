@@ -3,6 +3,7 @@
 namespace PHPLog;
 
 use PHPLog\Event;
+use PHPLog\Configuration;
 
 /**
  * Base class for filters used in the logger.
@@ -41,9 +42,9 @@ abstract class FilterAbstract {
 	/**
 	 * initializes the filter, this is required as 9/10 filters will
 	 * need some sort of configuration.
-	 * @param array $config the configuration for the filter.
+	 * @param Configuration $config the configuration for the filter.
 	 */
-	public abstract function __construct($config = array());
+	public abstract function __construct($config = new Configuration(array()));
 
 	/**
 	 * This is the function filters should override to determine if a

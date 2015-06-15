@@ -47,13 +47,26 @@ class Configuration implements \ArrayAccess, \Countable {
 	 * the default value is returned.
 	 * @param mixed $index the value to get.
 	 * @param mixed $defaultValue the value to return if the $index value is not defined.
+	 * @param \Closure|null $comparable a function which is ran on the var to determine its
+	 * validility. The closure must return a boolean value to determine if the value is correct.
 	 * @return mixed the $index value or if that not defined the $defaultValue
 	 */
-	public function get($index, $defaultValue = null) {
+	public function get($index, $defaultValue = null, $comparable = null) {
 		if(!$this->offsetExists($index)) {
 			return $defaultValue;
 		}
-		return $this->offsetGet($index);
+
+		$var = $this->offsetGet($index);
+
+		//get the result from the comparable if its an instanceof a closure.
+		if($comparable instanceof \Closure) {
+			$result = $comparable($var);
+			if(!is_bool($result) || !$result) {
+				return $defaultValue;
+			}
+		}
+
+		return $var;
 	}
 
 	/**

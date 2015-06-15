@@ -4,6 +4,7 @@ namespace PHPLog\Filter;
 
 use PHPLog\Event;
 use PHPLog\FilterAbstract;
+use PHPLog\Configuration;
 
 /**
  * Filter to apply to Loggers which determines whether to allow the
@@ -24,10 +25,12 @@ class FunctionMatch extends FilterAbstract {
 	 * Constructor - initializes the filter.
 	 * @param array $config the configuration for this filter.
 	 */
-	public function __construct($config = array()) {
-		$this->function = (isset($config['function']))
-			? trim($config['function'], ' \\') : null;
-		$this->acceptOnMatch = (isset($config['acceptOnMatch'])) ? $config['acceptOnMatch'] : true;
+	public function __construct($config = new Configuration(array())) {
+
+		$this->function = $config->get('function', null);
+		$this->function = (isset($this->function)) ? trim($this->function, ' \\') : null;
+
+		$this->acceptOnMatch = $config->get('acceptOnMatch', true);
 	}
 
 	/**
