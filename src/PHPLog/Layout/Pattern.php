@@ -449,6 +449,8 @@ class Pattern extends LayoutAbstract {
 		//parse the variables from the event into the provided pattern.
 		preg_match_all($this->regex, $statement, $matches);
 
+		die(var_dump($matches));
+
 		//check have matches.
 		if(count($matches) == 0 || !isset($matches[2]) || count($matches[2]) == 0) {
 			return $this->pattern; //no matches, return the pattern.
@@ -542,6 +544,8 @@ class Pattern extends LayoutAbstract {
 			$arg = trim($arg, ' \'');
 			$arg = str_replace($token, ",", $arg);
 		}
+
+		die(var_dump($args));
 
 		return $args;
 
