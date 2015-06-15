@@ -5,6 +5,7 @@ namespace PHPLog\Filter;
 use PHPLog\Event;
 use PHPLog\Level;
 use PHPLog\FilterAbstract;
+use PHPLog\Configuration;
 
 /**
  * filter used to match a level from a level range.
