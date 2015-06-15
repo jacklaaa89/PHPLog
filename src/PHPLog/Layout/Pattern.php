@@ -100,26 +100,31 @@ class Pattern extends LayoutAbstract {
 			},
 			/* number_format => (1605.45544 => 1,605.46) */
 			'nf' => function($value, $attr) {
+				$attr = (is_array($attr)) ? $attr[0] : $attr;
 				$attr = (!is_numeric($attr)) ? 2 : (int) $attr;
 				return number_format($value, $attr);
 			},
 			/* trim  => (' a string ' => 'a string') */
 			't' => function($value, $attr) {
+				$attr = (is_array($attr)) ? $attr[0] : $attr;
 				$attr = (strlen($attr) > 0) ? $attr : ' ';
 				return trim($value, $attr);
 			},
 			/* ltrim => (' a string ' => 'a string ') */
 			'lt' => function($value, $attr) {
+				$attr = (is_array($attr)) ? $attr[0] : $attr;
 				$attr = (strlen($attr) > 0) ? $attr : ' ';
 				return ltrim($value, $attr);
 			},
 			/* rtrim => (' a string ' => ' a string') */
 			'rt' => function($value, $attr) {
+				$attr = (is_array($attr)) ? $attr[0] : $attr;
 				$attr = (strlen($attr) > 0) ? $attr : ' ';
 				return rtrim($value, $attr);
 			},
 			//replaces $attr with ' ' good for spliting words etc.
 			'e' => function($value, $attr) {
+				$attr = (is_array($attr)) ? $attr[0] : $attr;
 				$value = implode(' ', explode($attr, $value));
 				return $value;
 			}	
@@ -134,11 +139,13 @@ class Pattern extends LayoutAbstract {
 		$this->specialValues = array(
 			/* used to format dates into a specific format. */
 			'date' => function($value, $format) {
+				$format = (is_array($format)) ? $format[0] : $format;
 				$format = (isset($format) && strlen($format) > 0) ? $format : 'Y-m-d';
 				return date($format, $value);
 			},
 			/* used for allow for multiple tabs by using an int argument. */
 			'tab' => function($value, $format) {
+				$format = (is_array($format)) ? $format[0] : $format;
 				$format = (strlen($format) < 2 && strlen($format) > 0 && is_numeric($format)) ? $format : 1;
 				$format = intval($format) - 1;
 				$v = $value;
@@ -535,8 +542,6 @@ class Pattern extends LayoutAbstract {
 			$arg = trim($arg, ' \'');
 			$arg = str_replace($token, ",", $arg);
 		}
-
-		die(var_dump($args));
 
 		return $args;
 
