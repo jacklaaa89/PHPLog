@@ -73,6 +73,7 @@ class Pattern extends LayoutAbstract {
 	 */
 	public function init(Configuration $config) {
 		//get configuration values passed from the user.
+		parent::init($config);
 
 		$this->pattern = $config->get('pattern', $this->pattern);
 		$this->identifier = $config->get('identifier', $this->identifier);
@@ -194,8 +195,6 @@ class Pattern extends LayoutAbstract {
 				}
 			}
 		}
-
-		die(var_dump($this));
 
 	}
 

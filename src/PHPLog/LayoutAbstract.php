@@ -35,7 +35,9 @@ abstract class LayoutAbstract extends Extension {
 	 * initializes the layout, by passing the configuration through from the writer.
 	 * @param Configuration $config the configuration to pass through.
 	 */
-	public abstract function init(Configuration $config);
+	public function init(Configuration $config) {
+		$this->config = $config;
+	}
 
 	/**
 	 * attempts to render a variable to push into a log.
