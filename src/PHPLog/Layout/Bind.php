@@ -5,6 +5,7 @@ namespace PHPLog\Layout;
 use PHPLog\Layout\Pattern;
 use PHPLog\Event;
 use PHPLog\Configuration;
+use PHPLog\Exception\CompilerException;
 
 /**
  * This class uses the parser in Pattern to generate a key => value array of values
@@ -47,6 +48,10 @@ class Bind extends Pattern {
 		foreach($this->keys as &$value) {
 			$value = trim($value); //remove any whitespace from either side.
 			preg_match('/'.$this->getIdentifier().'(\w+)/', $value, $matches);
+			$value = (!isset($matches[1])) ? $value : $matches[1];
+			if(!isset($matches[1])) {
+				$this->warn('An invalid key was defined.');
+			}
 			$value = $matches[1];
 		}
 	}
