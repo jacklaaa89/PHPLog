@@ -73,8 +73,6 @@ class PDO extends WriterAbstract {
 
 		$this->setLayout(new Bind());
 
-		die(var_dump($this));
-
 	}
 	
 	/**

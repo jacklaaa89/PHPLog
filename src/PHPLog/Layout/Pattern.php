@@ -55,7 +55,7 @@ class Pattern extends LayoutAbstract {
 	 * @version 1.1 - the parser accounts for most/all syntax errors that would break the regex, so this is 
 	 * its final form. We have also optional expressions in the if statement so '%if tester > 3%' is valid.
 	 */
-	private $regex_if = '/(?:(?:__ID__if ([\w\d]+)(?: (<=|>=|==|<|>) ([\w\d]+))?__ID__)((?:([\s\S]+)__ID__else__ID__([\s\S]+))|([\s\S]+))(?:__ID__endif__ID__))/';
+	private $regex_if = '/(?:(?:__ID__if ([\w\d]+)(?:(?: (<=|>=|==|<|>) ([\w\d]+))|[ ])?__ID__)((?:([\s\S]+)__ID__else__ID__([\s\S]+))|([\s\S]+))(?:__ID__endif__ID__))/';
 
 	/* added some constant values. */
 	private $consts = array();
@@ -364,7 +364,7 @@ class Pattern extends LayoutAbstract {
 	 */
 	private function checkForSyntaxErrors($statement) {
 		//check we dont have any syntax errors. ('i.e rogue %if {condition}% or %else% or %endif%')
-		if(preg_match('/(?:(?:'.$this->getIdentifier().'if ([\w\d]+)(?: (==|<|>|<=|>=) ([\w\d]+))?'.$this->getIdentifier().'))/',
+		if(preg_match('/(?:(?:'.$this->getIdentifier().'if ([\w\d]+)(?:(?: (==|<|>|<=|>=) ([\w\d]+))|[ ])?'.$this->getIdentifier().'))/',
 		 	$statement, $m, PREG_OFFSET_CAPTURE)) {
 			$offset = (isset($m[0]) && count($m[0]) > 0 && isset($m[0][1])) ? $m[0][1] : null;
 			throw new CompilerException('Syntax Error: if statement defined with no closing endif', $statement, $offset);
