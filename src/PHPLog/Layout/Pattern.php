@@ -17,6 +17,8 @@ use PHPLog\Configuration;
  * @version 3.0beta2 - added syntax error capturing support.
  * @version 3.0beta3 - utilizes the new configuration model for layouts and writers.
  * @version 3.0beta4 - added the functionality to allow for custom, filters and consts etc in the parser.
+ * @version 3.0beta5 - allowed for an infinite amount of variables in functions and filters.
+ * these are then parsed into an array and passed to the function.
  * @author Jack Timblin
  */
 class Pattern extends LayoutAbstract {
@@ -46,8 +48,11 @@ class Pattern extends LayoutAbstract {
 	 * the regex used to parse values into the pattern.
 	 * @version 2 - added support for placeholders as attributes in other placeholders i.e %date{%format}
 	 * and it also allows for alphanumeric variables to be passed to filters. i.e %cost|nf(2)|uc
+	 * @version 2.1beta - updated to support an infinite amount of variables passed through to the special values and filters.
+	 * variables will also have to be wrapped in '' quotes so we can parse them correctly.
+	 * @todo - allow escaping of "'" in method parameters.
 	 */
-	private $regex = '/(__ID__([\w\d]+)(?:\{([\w\d\-, \:\/]+|(?:(__ID__)([\w\d]+)))\})?(?:\|(?:([\w]{1,2})(?:\(([\w\d+\/\:]+)?\))?)(?:\|([\w\d]{1,2})(?:\(([\w\d_\/\:]+)?\))?)?)?)/';
+	private $regex = '/(__ID__([\w\d]+)(?:\{([\w\d\-,\.\' \:\/\\]+|(?:(__ID__)([\w\d]+)))\})?(?:\|(?:([\w]{1,2})(?:\(([\w\d\-,\.\' \:\/\\]+)?\))?)(?:\|([\w\d]{1,2})(?:\(([\w\d\-,\.\' \:\/\\]+)?\))?)?)?)/';
 
 	/**
 	 * the regex to allow for a single if/else statement in patterns.
@@ -145,44 +150,47 @@ class Pattern extends LayoutAbstract {
 			}
 		);
 
-		//check the configuration for any custom consts, filters or special values.
-		//defaultly defined functions cannot be overridden and will be ignored.
-		$filters = $config->get('filters', new Configuration(array()));
-		$consts = $config->get('consts', new Configuration(array()));
-		$variableFunctions = $config->get('variableFunctions', new Configuration(array()));
+		//custom filters etc are in beta.
+		if($this->versionUsed == self::BETA_VERSION) {
+			//check the configuration for any custom consts, filters or special values.
+			//defaultly defined functions cannot be overridden and will be ignored.
+			$filters = $config->get('filters', new Configuration(array()));
+			$consts = $config->get('consts', new Configuration(array()));
+			$variableFunctions = $config->get('variableFunctions', new Configuration(array()));
 
-		//add custom filters.
-		foreach($filters as $name => $function) {
-			if($function instanceof \Closure) {
-				$reflection = new \ReflectionFunction($function);
-				if($reflection->getNumberOfRequiredParameters() >= 2) {
-					//only the first two params are used at the minute.
-					if(!array_key_exists($name, $this->filters)) {
-						$this->filters[$name] = $function;
+			//add custom filters.
+			foreach($filters as $name => $function) {
+				if($function instanceof \Closure) {
+					$reflection = new \ReflectionFunction($function);
+					if($reflection->getNumberOfRequiredParameters() >= 2) {
+						//only the first two params are used at the minute.
+						if(!array_key_exists($name, $this->filters)) {
+							$this->filters[$name] = $function;
+						}
 					}
 				}
 			}
-		}
 
-		//add custom specialValues.
-		foreach($variableFunctions as $name => $function) {
-			if($function instanceof \Closure) {
-				$reflection = new \ReflectionFunction($function);
-				if($reflection->getNumberOfRequiredParameters() >= 2) {
-					//only the first two params are used at the minute.
-					if(!array_key_exists($name, $this->specialValues)) {
-						$this->specialValues[$name] = $function;
+			//add custom specialValues.
+			foreach($variableFunctions as $name => $function) {
+				if($function instanceof \Closure) {
+					$reflection = new \ReflectionFunction($function);
+					if($reflection->getNumberOfRequiredParameters() >= 2) {
+						//only the first two params are used at the minute.
+						if(!array_key_exists($name, $this->specialValues)) {
+							$this->specialValues[$name] = $function;
+						}
 					}
 				}
 			}
-		}
 
-		//add custom consts.
-		foreach($consts as $name => $value) {
-			if(isset($value) && is_string($value)) {
-				//only the first two params are used at the minute.
-				if(!array_key_exists($name, $this->consts)) {
-					$this->consts[$name] = $value;
+			//add custom consts.
+			foreach($consts as $name => $value) {
+				if(isset($value) && is_string($value)) {
+					//only the first two params are used at the minute.
+					if(!array_key_exists($name, $this->consts)) {
+						$this->consts[$name] = $value;
+					}
 				}
 			}
 		}
@@ -462,6 +470,10 @@ class Pattern extends LayoutAbstract {
 				foreach($f as $fil => $attr) {
 					if(strlen($fil) > 0 && array_key_exists($fil, $this->filters)) {
 						$func = $this->filters[$fil];
+
+						//format the args.
+						$attr = $this->formatArgs($attr);
+
 						$var = $func($var, $attr);
 					}
 				}
@@ -479,6 +491,8 @@ class Pattern extends LayoutAbstract {
 					$att = ($attr !== null) ? $att : '';
 					$att = (!is_string($att)) ? (string) $att : $att;
 				}
+
+				$att = $this->formatArgs($att);
 				$var = $func($var, $att);
 			}
 
@@ -495,6 +509,36 @@ class Pattern extends LayoutAbstract {
 			return ''; //could not parse the event.
 		}
 		return $this->{$this->versionUsed}($event);
+	}
+
+	/**
+	 * attempts to format the arguments passed to either a function or a filter
+	 * in the parsing attempt.
+	 * @param string $args the args parsed through to the parser.
+	 * @return array|string an array of parsed args on success or a string if
+	 * we are using the stable parser (this function is in beta)
+	 */
+	private function formatArgs($args) {
+		if($this->versionUsed == self::STABLE_VERSION) {
+			return $args; //do not format as this is in beta.
+		}
+
+		//first replace any escaped "," with a unique token as this the delimiter.
+		$token = '__ETAG__';
+		$args = str_replace('\,', $token, $args);
+
+		//explode the variables by a comma and strip any whitespace and "'" from the start and end.
+		$args = explode(',', $args);
+
+		foreach($args as &$arg) {
+			$arg = trim($arg, ' \'');
+			$arg = str_replace($token, ",", $arg);
+		}
+
+		die(var_dump($args));
+
+		return $args;
+
 	}
 
 	/**
