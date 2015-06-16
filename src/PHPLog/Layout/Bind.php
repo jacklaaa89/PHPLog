@@ -91,6 +91,7 @@ class Bind extends Pattern {
 		for($i = 0; $i < count($params); $i++) {
 			$bind[':'.$this->keys[$i]] = $params[$i];
 		}
+		die(var_dump($bind));
 		return $bind;
 	}
 
