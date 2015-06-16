@@ -52,14 +52,20 @@ class Bind extends Pattern {
 			$matches
 		);
 
-		die(var_dump($matches));
-
+		$patternCopy = $this->pattern;
 		//check have matches.
-		if(count($matches) == 0 || !isset($matches[2]) || count($matches[2]) == 0) {
-			return $this->pattern; //no matches, return the pattern.
+		if(count($matches) > 0 && isset($matches[1]) && count($matches[1]) > 0) {
+			//format the middle and strip end commas from the params.
+			$token = '__ETAG__';
+			for($i = 0; $i < count($matches[1]); $i++) {
+				$insert = $matches[1][$i];
+				$c = str_replace(',', $token, trim($insert, ' ,'));
+				$placeholder = str_replace($insert, $c, $matches[0][$i]);
+				$patternCopy = str_replace($matches[0][$i], $placeholder, $patternCopy);
+			}
 		}
 
-		$this->keys = explode($this->delimiter, $this->pattern);
+		$this->keys = explode($this->delimiter, $patternCopy);
 		foreach($this->keys as &$value) {
 			$value = trim($value); //remove any whitespace from either side.
 			preg_match('/'.$this->getIdentifier().'(\w+)/', $value, $matches);
@@ -68,6 +74,8 @@ class Bind extends Pattern {
 				$this->warn('An invalid key was defined: ' . $value);
 			}
 		}
+
+		die(var_dump($this));
 	}
 
 	/**
