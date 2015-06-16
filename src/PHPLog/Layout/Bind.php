@@ -50,7 +50,7 @@ class Bind extends Pattern {
 			preg_match('/'.$this->getIdentifier().'(\w+)/', $value, $matches);
 			$value = (!isset($matches[1])) ? $value : $matches[1];
 			if(!isset($matches[1])) {
-				$this->warn('An invalid key was defined.');
+				$this->warn('An invalid key was defined: ' . $value);
 			}
 		}
 	}
