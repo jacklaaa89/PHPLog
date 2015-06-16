@@ -53,8 +53,9 @@ class Pattern extends LayoutAbstract {
 	 * variables will also have to be wrapped in '' quotes so we can parse them correctly.
 	 * @version 2.2beta - multiple parameters are a lot more structured, params have to be wrapped
 	 * in "'" and seperated with a ","
+	 * @version 2.2 - commas and "'" can now be escaped using the normal escape backstash so comma in a value is \, and "'" is \'
 	 */
-	private $regex = '/(__ID__([\w\d]+)(?:\{(?:(\'[\\\ \w\d\-,\'\.\:\/]*\'(?:,\'[\\\ \w\d\-,\.\'\:\/]*\')*)|(?:(__ID__)([\w\d]+)))\})?(?:\|(?:([\w]{1,2})(?:\((\'[\w\d\-,\.\\\ \:\/]*\'(?:,\'[\w\d\-,\.\\\ \:\/]*\')*)?\))?)(?:\|([\w\d]{1,2})(?:\((\'[\w\d\-,\.\'\\\ \:\/]*\'(?:,\'[\w\d\-,\.\'\\\ \:\/]*\')*)?\))?)?)?)/';
+	private $regex = '/(__ID__([\w\d]+)(?:\{(?:(\'[\\\ \w\d\-,\'\.\:\/\"]*\'(?:,\'[\\\ \w\d\-,\.\'\:\/]*\')*)|(?:(__ID__)([\w\d]+)))\})?(?:\|(?:([\w]{1,2})(?:\((\'[\w\d\-,\.\\\ \:\/]*\'(?:,\'[\w\d\-,\.\\\ \:\/]*\')*)?\))?)(?:\|([\w\d]{1,2})(?:\((\'[\w\d\-,\.\'\\\ \:\/]*\'(?:,\'[\w\d\-,\.\'\\\ \:\/]*\')*)?\))?)?)?)/';
 
 	/**
 	 * the regex to allow for a single if/else statement in patterns.
@@ -496,16 +497,18 @@ class Pattern extends LayoutAbstract {
 	private function formatArgs($args) {
 
 		//first replace any escaped "," with a unique token as this the delimiter.
-		$token = '__ETAG__';
-		$args = str_replace('\,', $token, $args);
+		$tokens = array('__CTAG__', '__DTAG__');
+		$args = str_replace(array('\,', '\''), $tokens, $args);
 
 		//explode the variables by a comma and strip any whitespace and "'" from the start and end.
 		$args = explode(',', $args);
 
 		foreach($args as &$arg) {
 			$arg = trim($arg, ' \'');
-			$arg = str_replace($token, ",", $arg);
+			$arg = str_replace($tokens, array(",", "'"), $arg);
 		}
+
+		die(var_dump($args));
 
 		return $args;
 
