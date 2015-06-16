@@ -47,6 +47,12 @@ class Bind extends Pattern {
 		$this->keys = $this->parseValueNames();
 	}
 
+	/**
+	 * parses the names of the variables from the pattern and
+	 * stores them as the keys to use in the bind.
+	 * @return array an array of keys used in the pattern.
+	 * @throws Exception if the parse failed or we found no keys.
+	 */
 	private function parseValueNames() {
 		$regexes = $this->getRegex();
 

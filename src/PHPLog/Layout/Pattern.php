@@ -577,6 +577,7 @@ class Pattern extends LayoutAbstract {
 	/**
 	 * returns the regexes that are currently being used to parse
 	 * patterns in this parser.
+	 * only available to classes that extend this class.
 	 * @return array the regexes being used in this parser.
 	 */
 	protected function getRegex() {
