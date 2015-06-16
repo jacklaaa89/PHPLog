@@ -44,6 +44,21 @@ class Bind extends Pattern {
 		}
 
 		$this->pattern = $config->pattern;
+
+		//escape the commas used as params (matches params with an empty "," at the end so we can trim it.)
+		preg_match_all(
+			"/[\(\{]('[\\\ \w\d\-,\.\:\/\"]*'(?:,{1}|(?:,'[\\\ \w\d\-,\.\:\/\"]*')*))?[\)\}]/", 
+			$this->pattern, 
+			$matches
+		);
+
+		die(var_dump($matches));
+
+		//check have matches.
+		if(count($matches) == 0 || !isset($matches[2]) || count($matches[2]) == 0) {
+			return $this->pattern; //no matches, return the pattern.
+		}
+
 		$this->keys = explode($this->delimiter, $this->pattern);
 		foreach($this->keys as &$value) {
 			$value = trim($value); //remove any whitespace from either side.
