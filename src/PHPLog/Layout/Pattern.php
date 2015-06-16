@@ -547,8 +547,6 @@ class Pattern extends LayoutAbstract {
 			$arg = str_replace($token, ",", $arg);
 		}
 
-		die(var_dump($args));
-
 		return $args;
 
 	}
