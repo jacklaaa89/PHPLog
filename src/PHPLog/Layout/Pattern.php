@@ -19,6 +19,7 @@ use PHPLog\Configuration;
  * @version 3.0beta4 - added the functionality to allow for custom, filters and consts etc in the parser.
  * @version 3.0beta5 - allowed for an infinite amount of variables in functions and filters.
  * these are then parsed into an array and passed to the function.
+ * @version 3.0 - the parser has graduated to a stable version 3.0.
  * @author Jack Timblin
  */
 class Pattern extends LayoutAbstract {
@@ -53,7 +54,6 @@ class Pattern extends LayoutAbstract {
 	 * @version 2.2beta - multiple parameters are a lot more structured, params have to be wrapped
 	 * in "'" and seperated with a ","
 	 */
-	//private $regex = '/(__ID__([\w\d]+)(?:\{(?:(\'[\\\ \w\d\-,\.\:\/]*\'(?:,\'[\\\ \w\d\-,\.\:\/]*\')*)|(?:(__ID__)([\w\d]+))))\})?(?:\|(?:([\w]{1,2})(?:\((\'[\w\d\-,\.\\\ \:\/]*\'(?:,\'[\w\d\-,\.\\\ \:\/]*\')*)?\))?)(?:\|([\w\d]{1,2})(?:\((\'[\w\d\-,\.\'\\\ \:\/]*\'(?:,\'[\w\d\-,\.\'\\\ \:\/]*\')*)?\))?)?)?)/';
 	private $regex = '/(__ID__([\w\d]+)(?:\{(?:(\'[\\\ \w\d\-,\'\.\:\/]*\'(?:,\'[\\\ \w\d\-,\.\'\:\/]*\')*)|(?:(__ID__)([\w\d]+)))\})?(?:\|(?:([\w]{1,2})(?:\((\'[\w\d\-,\.\\\ \:\/]*\'(?:,\'[\w\d\-,\.\\\ \:\/]*\')*)?\))?)(?:\|([\w\d]{1,2})(?:\((\'[\w\d\-,\.\'\\\ \:\/]*\'(?:,\'[\w\d\-,\.\'\\\ \:\/]*\')*)?\))?)?)?)/';
 
 	/**
@@ -160,47 +160,44 @@ class Pattern extends LayoutAbstract {
 			}
 		);
 
-		//custom filters etc are in beta.
-		if($this->versionUsed == self::BETA_VERSION) {
-			//check the configuration for any custom consts, filters or special values.
-			//defaultly defined functions cannot be overridden and will be ignored.
-			$filters = $config->get('filters', new Configuration(array()));
-			$consts = $config->get('consts', new Configuration(array()));
-			$variableFunctions = $config->get('variableFunctions', new Configuration(array()));
+		//check the configuration for any custom consts, filters or special values.
+		//defaultly defined functions cannot be overridden and will be ignored.
+		$filters = $config->get('filters', new Configuration(array()));
+		$consts = $config->get('consts', new Configuration(array()));
+		$variableFunctions = $config->get('variableFunctions', new Configuration(array()));
 
-			//add custom filters.
-			foreach($filters as $name => $function) {
-				if($function instanceof \Closure) {
-					$reflection = new \ReflectionFunction($function);
-					if($reflection->getNumberOfRequiredParameters() >= 2) {
-						//only the first two params are used at the minute.
-						if(!array_key_exists($name, $this->filters)) {
-							$this->filters[$name] = $function;
-						}
-					}
-				}
-			}
-
-			//add custom specialValues.
-			foreach($variableFunctions as $name => $function) {
-				if($function instanceof \Closure) {
-					$reflection = new \ReflectionFunction($function);
-					if($reflection->getNumberOfRequiredParameters() >= 2) {
-						//only the first two params are used at the minute.
-						if(!array_key_exists($name, $this->specialValues)) {
-							$this->specialValues[$name] = $function;
-						}
-					}
-				}
-			}
-
-			//add custom consts.
-			foreach($consts as $name => $value) {
-				if(isset($value) && is_string($value)) {
+		//add custom filters.
+		foreach($filters as $name => $function) {
+			if($function instanceof \Closure) {
+				$reflection = new \ReflectionFunction($function);
+				if($reflection->getNumberOfRequiredParameters() >= 2) {
 					//only the first two params are used at the minute.
-					if(!array_key_exists($name, $this->consts)) {
-						$this->consts[$name] = $value;
+					if(!array_key_exists($name, $this->filters)) {
+						$this->filters[$name] = $function;
 					}
+				}
+			}
+		}
+
+		//add custom specialValues.
+		foreach($variableFunctions as $name => $function) {
+			if($function instanceof \Closure) {
+				$reflection = new \ReflectionFunction($function);
+				if($reflection->getNumberOfRequiredParameters() >= 2) {
+					//only the first two params are used at the minute.
+					if(!array_key_exists($name, $this->specialValues)) {
+						$this->specialValues[$name] = $function;
+					}
+				}
+			}
+		}
+
+		//add custom consts.
+		foreach($consts as $name => $value) {
+			if(isset($value) && is_string($value)) {
+				//only the first two params are used at the minute.
+				if(!array_key_exists($name, $this->consts)) {
+					$this->consts[$name] = $value;
 				}
 			}
 		}
@@ -208,73 +205,17 @@ class Pattern extends LayoutAbstract {
 	}
 
 	/**
-	 * parses the current log event into the pattern in which the log should be formatted.
-	 * 
-	 * ### Options ###
-	 * a pattern can be any string format and contain any characters but anything prefixed with
-	 * the identifier variable will be replaced with the relevent variable or '' if that variable
-	 * does not exist. Variables will attempted to be pulled from the event object that is passed
-	 * into this method, (extra variables with custom names are assigned to this object at runtime)
-	 * and because of this there are some defined variables that have been statically set in the 
-	 * pattern parser to account for this. These are:
-	 *
-	 * %message - the message that was passed to the log.
-	 * %level - the string representation of the severity level for the log.
-	 * %date({format})* - the date that that the log was created, can optionally be formatted.
-	 * %logger - the name of the logger that generated the log.
-	 * %newline - outputs a PHP_EOL string.
-	 * %tab({amount})* - outputs a tab an amount can be defined to increase the size of the tab.
-	 *
-	 * Any other variables that are defined in the pattern will be treated as extra values. 
-	 * And obviously the '%' will be substituted with whatever identifier is defined on configuration.
-	 *
-	 * ### FILTERS ###
-	 * optional filters can be applied to variables in the pattern (apart from %newline and %tab)
-	 * which are applied to the variable. (maximum of two filters per variable) These include: 
-	 *
-	 * uc - applies ucwords to the value.
-	 * u - applies strtoupper to the value
-	 * l - applies strtolower to the value
-	 * nf - applies number_format to the value.
-	 * t - applies trim to the value.
-	 * lt - applies ltrim to the value.
-	 * rt - applies rtrim to the value.
-	 * e(delimiter) - seperates a word by a delimiter. so IS_NULL with e(_) becomes IS NULL
-	 *
-	 * These filters are applied by using the pipe operator in a variable. for example: %message|u
-	 *
-	 * ### VERSION 2 ###
-	 * Any variable that requires an argument (i.e %date{%format}) can now be passed another variable
-	 * which will also be resolved and passed to the approiate function that deals with applying arguments
-	 * to variables. i.e %format in %date{%format} will be resolved from the event as a variable and passed
-	 * to the function which formats the date.
-	 *
-	 * Filters are also allowed alphanumeric arguments in order to add more detailed customisation in using filters.
-	 * it also unlocks the possibility of using more complex filters. for example %cost|nf(2)|t will apply number_format
-	 * to the resolved %cost variable to 2 decimal places and then trim will be applies to that value.
-	 *
-	 * ### VERSION 2.1 ###
-	 * the Event now carries information for the location on where the log event was triggered. This information 
-	 * includes: 
-	 *
-	 * %line - the line number in the script that executed the log event.
-	 * %file - the name of the file that executed the log event.
-	 * %class - the class name of the object that executed the event.
-	 * %function - the function that the log event was called in.
-	 *
+	 * Currently no Beta version of the parser is available. Will throw an error on use.
 	 * @param Event $event the event that we are attempting to log.
 	 * @return string the $event formatted to the provided pattern.
+	 * @throws Exception there is no beta version, so throws an error to confirm that.
 	 */
-	public function stableParse(Event $event) {
-		return $this->parseStatement($event, $this->pattern);
+	public function betaParse(Event $event) {
+		throw new \Exception('Beta parser version is currently not available.');
 	}
 
 	/**
 	 * parses the current log event into the pattern in which the log should be formatted.
-	 *
-	 * ### WARNING ### 
-	 * This parser is currently in the beta development state, and as such it is still
-	 * A work in development and should not be used in production code.
 	 * 
 	 * ### Options ###
 	 * a pattern can be any string format and contain any characters but anything prefixed with
@@ -343,6 +284,25 @@ class Pattern extends LayoutAbstract {
 	 * - a rogue 'else' without an if or else.
 	 * - a nested if/else statement was found.
 	 *
+	 *
+	 * ### VERSION 3.0beta3 ###
+	 * The pattern parser now utilizes the new PHPLog\Configuration class for config instead
+	 * of using a standard array.
+	 *
+	 * ### VERSION 3.0beta4 ###
+	 * a user can now supply custom filter functions, special value functions and consts in the
+	 * configuration and they will be used in the compiler if they meet the minimum requirements
+	 * of that particular function and dont attempt to override default functions.
+	 * 
+	 * ### VERSION 3.0beta5 ###
+	 * parameters passed to filters and functions must now be contained in '' marks and cannot 
+	 * contain any \' in the value. The advantage of this is to allow multiple parameters in filters/functions
+	 * i.e %message|sr('View','Show',...) any amount of params can be applied and they get passed
+	 * as an array to the function that will deal with it.
+	 *
+	 * ### VERSION 3.0 ###
+	 * the beta parser has now graduated from beta.
+	 *
 	 * ### KNOWN ISSUES / BUGS ###
 	 * an if/else statement is not recognised if any of the inside statements are empty.
 	 *
@@ -350,7 +310,7 @@ class Pattern extends LayoutAbstract {
 	 * @return string the $event formatted to the provided pattern.
 	 * @throws Exception if a syntax error is found in the pattern.
 	 */
-	public function betaParse(Event $event) {
+	public function stableParse(Event $event) {
 		//we need to first parse any if/else statements that are in the pattern.
 		preg_match_all($this->regex_if, $this->pattern, $matches);
 		
@@ -516,6 +476,9 @@ class Pattern extends LayoutAbstract {
 		return $pattern;
 	}
 
+	/**
+	 * @see PHPLog\WriterAbstract::parse()
+	 */
 	public function parse(Event $event) {
 		if(!method_exists($this, $this->versionUsed)) {
 			return ''; //could not parse the event.
@@ -527,13 +490,10 @@ class Pattern extends LayoutAbstract {
 	 * attempts to format the arguments passed to either a function or a filter
 	 * in the parsing attempt.
 	 * @param string $args the args parsed through to the parser.
-	 * @return array|string an array of parsed args on success or a string if
-	 * we are using the stable parser (this function is in beta)
+	 * @return array an array of parsed args on success
+	 * @version 1.0 - graduated from beta phase.
 	 */
 	private function formatArgs($args) {
-		if($this->versionUsed == self::STABLE_VERSION) {
-			return $args; //do not format as this is in beta.
-		}
 
 		//first replace any escaped "," with a unique token as this the delimiter.
 		$token = '__ETAG__';
