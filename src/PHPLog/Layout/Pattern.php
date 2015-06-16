@@ -53,7 +53,7 @@ class Pattern extends LayoutAbstract {
 	 * @version 2.2beta - multiple parameters are a lot more structured, params have to be wrapped
 	 * in "'" and seperated with a ","
 	 */
-	private $regex = '/(__ID__([\w\d]+)(?:\{(?:(\'[\\\ \w\d\-,\.\:\/\"]*\'(?:,\'[\\\ \w\d\-,\.\:\/\"]*\')*)|(?:(__ID__)([\w\d]+))))\})?(?:\|(?:([\w]{1,2})(?:\((\'[\w\d\-,\.\\\ \:\/\"]*\'(?:,\'[\w\d\-,\.\\\ \:\/\"]*\')*)?\))?)(?:\|([\w\d]{1,2})(?:\((\'[\w\d\-,\.\'\\\ \:\/\"]*\'(?:,\'[\w\d\-,\.\'\\\ \:\/\"]*\')*)?\))?)?)?)/';
+	private $regex = '/(__ID__([\w\d]+)(?:\{(?:(\'[\\\ \w\d\-,\.\:\/]*\'(?:,\'[\\\ \w\d\-,\.\:\/]*\')*)|(?:(__ID__)([\w\d]+))))\})?(?:\|(?:([\w]{1,2})(?:\((\'[\w\d\-,\.\\\ \:\/]*\'(?:,\'[\w\d\-,\.\\\ \:\/]*\')*)?\))?)(?:\|([\w\d]{1,2})(?:\((\'[\w\d\-,\.\'\\\ \:\/]*\'(?:,\'[\w\d\-,\.\'\\\ \:\/]*\')*)?\))?)?)?)/';
 
 	/**
 	 * the regex to allow for a single if/else statement in patterns.
@@ -449,6 +449,8 @@ class Pattern extends LayoutAbstract {
 	public function parseStatement(Event $event, $statement) {
 		//parse the variables from the event into the provided pattern.
 		preg_match_all($this->regex, $statement, $matches);
+
+		die(var_dump($matches));
 
 		//check have matches.
 		if(count($matches) == 0 || !isset($matches[2]) || count($matches[2]) == 0) {
