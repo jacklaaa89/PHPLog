@@ -115,6 +115,17 @@ class Logger extends ExtraAbstract {
 	}
 
 	/**
+	 * Helper function to log a message at the trace log level.
+	 * @param string $message the message to log.
+	 * @param array $extras [optional] the array of extra variables to pass
+	 * to this single log entry.
+	 *
+	 */
+	public function trace($message, $extras = array()) {
+		$this->log(Level::trace(), $message, $extras);
+	}
+
+	/**
 	 * attempts to log a message to the defined writers and if this
 	 * logger cannot handle the log, then (if enabled) the log event is
 	 * propogated down the logger chain.

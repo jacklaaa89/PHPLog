@@ -35,7 +35,7 @@ class PDO extends WriterAbstract {
 	private $insertStatement = 'INSERT INTO :table: (:keys:) VALUES (:bindkeys:)';
 
 	/* the pattern used in the conversion. */
-	protected $pattern = '%level,%message,%date{Y-m-d H:i:s}';
+	protected $pattern = '%level,%message,%date{\'Y-m-d H:i:s\'}';
 
 	/**
 	 * Constructor - initializes the database connection.

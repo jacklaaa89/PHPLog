@@ -453,7 +453,7 @@ class Pattern extends LayoutAbstract {
 						try {
 							$var = $func($var, $attr);
 						} catch (\Exception $e) {
-							throw new CompilerException('An error occured running a variable function.', $statement);
+							throw new CompilerException('An error occured running a filter.', $statement);
 						}
 					}
 				}
@@ -473,7 +473,11 @@ class Pattern extends LayoutAbstract {
 				}
 
 				$att = $this->formatArgs($att);
-				$var = $func($var, $att);
+				try {
+						$var = $func($var, $attr);
+					} catch (\Exception $e) {
+						throw new CompilerException('An error occured running a variable function.', $statement);
+					}
 			}
 
 			//push the value in the correct position.
