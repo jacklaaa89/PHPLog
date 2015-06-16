@@ -498,7 +498,7 @@ class Pattern extends LayoutAbstract {
 
 		//first replace any escaped "," with a unique token as this the delimiter.
 		$tokens = array('__CTAG__', '__DTAG__');
-		$args = str_replace(array('\,', '\''), $tokens, $args);
+		$args = str_replace(array('\,', '\\\''), $tokens, $args);
 
 		//explode the variables by a comma and strip any whitespace and "'" from the start and end.
 		$args = explode(',', $args);
