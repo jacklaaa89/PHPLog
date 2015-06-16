@@ -47,7 +47,13 @@ abstract class LayoutAbstract extends Extension {
 	 */
 	public function render($object) {
 		$renderer = Logger::getRenderer();
-		return $renderer->render($object);
+		try {
+		 	$renderer->render($object);
+		} catch (\Exception $e) {
+			throw new \Exception($e->getMessage());
+		}
+		return $value;
+
 	}
 
 }

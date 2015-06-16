@@ -92,50 +92,61 @@ class Renderer {
 	 * @return string the rendered representation of this $object.
 	 */
 	public function render($object) {
+		try {
+			//check we dont have any primitive type.
+			foreach($this->primatives as $function => $entry) {
 
-		//check we dont have any primitive type.
-		foreach($this->primatives as $function => $entry) {
+				$renderer = $entry['renderer'];
+				//if we dont have a renderer, continue.
+				if(!($renderer) instanceof RendererInterface) {
+					continue;
+				}
 
-			$renderer = $entry['renderer'];
-			//if we dont have a renderer, continue.
-			if(!($renderer) instanceof RendererInterface) {
-				continue;
+				//attempt to check if we have a certain primitive type.
+				if(call_user_func('is_'.$function, $object)) {
+					return $renderer->render($object);
+				}
 			}
-
-			//attempt to check if we have a certain primitive type.
-			if(call_user_func('is_'.$function, $object)) {
-				return $renderer->render($object);
-			}
-
+		} catch (\Exception $e) {
+			throw new \Exception($e->getMessage());
 		}
 
 		//lets determine if the object has more than one renderer.
 		//inheritance based rendering.
-		$var = null;
-		foreach($this->renderers as $class => $entry) {
-			if(is_a($object, $class)) {
-				$renderer = $entry['renderer'];
-				if($renderer instanceof RendererInterface) {
-					if(!isset($var)) {
-						$var = '';
-					}
-					$var .= ((strlen($var) > 0) ? ' - ' : '') . $renderer->render($object);
-					if($entry['disable']) {
-						//pointless even checking for more after.
-						$var = $renderer->render($object);
-						break;
+		try {
+			$var = null;
+			foreach($this->renderers as $class => $entry) {
+				if(is_a($object, $class)) {
+					$renderer = $entry['renderer'];
+					if($renderer instanceof RendererInterface) {
+						if(!isset($var)) {
+							$var = '';
+						}
+						$var .= ((strlen($var) > 0) ? ' - ' : '') . $renderer->render($object);
+						if($entry['disable']) {
+							//pointless even checking for more after.
+							$var = $renderer->render($object);
+							break;
+						}
 					}
 				}
 			}
-		}
-		if(isset($var)) {
-			return $var;
+			if(isset($var)) {
+				return $var;
+			}
+		} catch (\Exception $e) {
+			throw new \Exception($e->getMessage());
 		}
 
 		//at this point there was no defined renderer for this object.
 		//use the default.
 		if($this->defaultRenderer instanceof RendererInterface) {
-			return $this->defaultRenderer->render($object);
+			try {
+				 $value = $this->defaultRenderer->render($object);
+				 return $value;
+			} catch (\Exception $e) {
+				throw new \Exception($e->getMessage());
+			}
 		}
 
 		//attempt to cast the object to a string.

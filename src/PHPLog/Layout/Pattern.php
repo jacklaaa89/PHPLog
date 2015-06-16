@@ -435,7 +435,11 @@ class Pattern extends LayoutAbstract {
 			if(!$isConst) {
 				$name = 'get'.ucwords($matches[2][$i]);
 				$var = $event->$name();
-				$var = $this->render($var);
+				try {
+					$var = $this->render($var);
+				} catch(\Exception $e) {
+					throw new CompilerException('An error occured rendering a value', $statement);
+				}
 
 				//pass it through any filters that have been added to the variable.
 				$f = array($matches[6][$i] => $matches[7][$i], $matches[8][$i] => $matches[9][$i]);
@@ -446,8 +450,11 @@ class Pattern extends LayoutAbstract {
 
 						//format the args.
 						$attr = $this->formatArgs($attr);
-
-						$var = $func($var, $attr);
+						try {
+							$var = $func($var, $attr);
+						} catch (\Exception $e) {
+							throw new CompilerException('An error occured running a variable function.', $statement);
+						}
 					}
 				}
 			}
