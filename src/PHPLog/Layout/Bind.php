@@ -44,36 +44,28 @@ class Bind extends Pattern {
 		}
 
 		$this->pattern = $config->pattern;
+		$this->keys = $this->parseValueNames();
+	}
 
-		//escape the commas used as params (matches params with an empty "," at the end so we can trim it.)
-		preg_match_all(
-			"/[\(\{]('[\\\ \w\d\-,\.\:\/\"]*'(?:,{1}|(?:,'[\\\ \w\d\-,\.\:\/\"]*')*))?[\)\}]/", 
-			$this->pattern, 
-			$matches
-		);
+	private function parseValueNames() {
+		$regexes = $this->getRegex();
 
-		$patternCopy = $this->pattern;
+		if(!preg_match_all($regexes[0], $this->pattern, $matches)) {
+			throw new \Exception('invalid pattern defined.');
+		}
+
 		//check have matches.
-		if(count($matches) > 0 && isset($matches[1]) && count($matches[1]) > 0) {
-			//format the middle and strip end commas from the params.
-			$token = '__ETAG__';
-			for($i = 0; $i < count($matches[1]); $i++) {
-				$insert = $matches[1][$i];
-				$c = str_replace(',', $token, trim($insert, ' ,'));
-				$placeholder = str_replace($insert, $c, $matches[0][$i]);
-				$patternCopy = str_replace($matches[0][$i], $placeholder, $patternCopy);
-			}
+		if(count($matches) == 0 || !isset($matches[2]) || count($matches[2]) == 0) {
+			throw new \Exception('invalid pattern defined.');
 		}
 
-		$this->keys = explode($this->delimiter, $patternCopy);
-		foreach($this->keys as &$value) {
-			$value = trim($value); //remove any whitespace from either side.
-			preg_match('/'.$this->getIdentifier().'(\w+)/', $value, $matches);
-			$value = (!isset($matches[1])) ? $value : $matches[1];
-			if(!isset($matches[1])) {
-				throw new \Exception('invalid pattern defined.');
-			}
+		$keys = array();
+		for($i = 0; $i < count($matches[2]); $i++) {
+			$keys[] = $matches[2][$i];
 		}
+
+		return $keys;
+
 	}
 
 	/**

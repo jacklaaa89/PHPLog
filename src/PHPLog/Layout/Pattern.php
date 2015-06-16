@@ -504,7 +504,7 @@ class Pattern extends LayoutAbstract {
 		$args = explode(',', $args);
 
 		foreach($args as &$arg) {
-			$arg = trim($arg, ' \'');
+			$arg = trim($arg, " '");
 			$arg = str_replace($tokens, array(",", "'"), $arg);
 		}
 
@@ -572,6 +572,18 @@ class Pattern extends LayoutAbstract {
 		return ($this->versionUsed == self::STABLE_VERSION) 
 				? $this->{'STABLE_VERSION_NUMBER'} : $this->{'BETA_VERSION_NUMBER'};
 
+	}
+
+	/**
+	 * returns the regexes that are currently being used to parse
+	 * patterns in this parser.
+	 * @return array the regexes being used in this parser.
+	 */
+	protected function getRegex() {
+		return array(
+			str_replace('__ID__', $this->getIdentifier(), $this->regex), 
+			str_replace('__ID__', $this->getIdentifier(), $this->regex_if)
+		);
 	}
 
 }
