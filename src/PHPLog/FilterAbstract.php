@@ -45,11 +45,14 @@ abstract class FilterAbstract {
 	 * @param array $config [optional] the configuration for this object.
 	 */
 	public function __construct($config = array()) {
-		if(!is_array($config)) {
+		
+		if(!is_array($config) || !($config instanceof Configuration)) {
 			throw new \Exception('Configuration is of wrong type.');
 		}
 
-		$config = new Configuration($config);
+		if(!($config instanceof Configuration)) {
+			$config = new Configuration($config);
+		}
 
 		$this->config = $config;
 
