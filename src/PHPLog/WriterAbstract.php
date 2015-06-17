@@ -28,8 +28,7 @@ abstract class WriterAbstract extends Extension {
 		parent::__construct();
 
 		if(!is_array($config) || !($config instanceof Configuration)) {
-			die(var_dump($config));
-			throw new \Exception('Configuration is of wrong type.');
+			$config = array();
 		}
 
 		if(!($config instanceof Configuration)) {
