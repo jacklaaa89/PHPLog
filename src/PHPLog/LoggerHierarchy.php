@@ -124,6 +124,7 @@ class LoggerHierarchy extends ExtraAbstract {
 			//set all of the valid writers.
 			foreach($config->writers as $name => $writerConf) {
 				$className = 'PHPLog\\Writer\\'.$name;
+				die(var_dump($className));
 				if(class_exists($className)) {
 					$writer = new $className($writerConf);
 					if($writer instanceof WriterAbstract) {
