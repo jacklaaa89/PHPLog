@@ -6,6 +6,9 @@ use PHPLog\Logger;
 use PHPLog\Root;
 use PHPLog\Level;
 use PHPLog\ExtraAbstract;
+use PHPLog\Configuration;
+use PHPLog\WriterAbstract;
+use PHPLog\FilterAbstract;
 
 /**
  * This class maintains the hierarchy of loggers that are currently in use.
@@ -20,6 +23,9 @@ class LoggerHierarchy extends ExtraAbstract {
 	
 	/* the loggers in the current hierarchy */
 	protected $loggers = array();
+
+	/* any global configuration to pass to any writer in a logger. */
+	protected $loggerConfig = array();
 
 	/* an instance of the root logger. */
 	protected $root;
@@ -48,7 +54,7 @@ class LoggerHierarchy extends ExtraAbstract {
 	 * @param string $name the name of the logger.
 	 * @return Logger the new or existing Logger instance.
 	 */
-	public function getLogger($name) {
+	public function getLogger($name, $config) {
 		if(!isset($this->loggers[$name])) {
 			$logger = new Logger($name);
 
@@ -68,7 +74,9 @@ class LoggerHierarchy extends ExtraAbstract {
 				}
 			}
 
+			$logger = $this->setInitialConfiguration($logger, $config);
 			$this->loggers[$name] = $logger;
+
 		}
 
 		return $this->loggers[$name];
@@ -102,4 +110,42 @@ class LoggerHierarchy extends ExtraAbstract {
 		return $this->renderer;
 	}
 
+	/**
+	 * sets any initial configuration for a logger.
+	 * @param Logger $logger the logger to configure.
+	 * @param array $config the config to configure the logger with.
+	 * @return Logger the configured logger.
+	 */
+	private function setInitialConfiguration($logger, $config) {
+
+		$config = new Configuration($config);
+
+		if(isset($config->writers)) {
+			//set all of the valid writers.
+			foreach($config->writers as $name => $writerConf) {
+				$className = '\\PHPLog\\Writer\\'.$name;
+				if(class_exists($className)) {
+					$writer = new $className($writerConf);
+					if($writer instanceof WriterAbstract) {
+						$logger->addWriter($writer);
+					}
+				}
+			}
+		}
+
+		if(isset($config->filters)) {
+			//set all valid filters.
+			foreach($config->filters as $name => $filterConf) {
+				$className = '\\PHPLog\\Filter\\'.$name;
+				if(class_exists($className)) {
+					$filter = new $className($writerConf);
+					if($filter instanceof FilterAbstract) {
+						$logger->addFilter($filter);
+					}
+				}
+			}
+		}
+
+		return $logger;
+	}
 }

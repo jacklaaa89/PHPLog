@@ -371,10 +371,12 @@ class Logger extends ExtraAbstract {
 	 * This method also handles adding the logger to the LoggerHierarchy and maintaining
 	 * its parent logger.
 	 * @param string $name the name of the logger.
+	 * @param array $config [optional] any global config to apply to all writers in this
+	 * logger.
 	 * @return Logger either a new or existing logger with the {$name} provided.
 	 */
-	public static function getLogger($name) {
-		return self::getHierarchy()->getLogger($name);
+	public static function getLogger($name, $config = array()) {
+		return self::getHierarchy()->getLogger($name, $config);
 	}
 
 	/**

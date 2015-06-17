@@ -21,6 +21,15 @@ class Extension {
 	}
 
 	/**
+	 * gets the short name of the extension with no namespace.
+	 * @return string the short name of this extension with no namespace.
+	 */
+	public function getShortName() {
+		$rc = new \ReflectionClass($this);
+		return $rc->getShortName();
+	}
+
+	/**
 	 * called in the constructor, should be overriden by subclasses to add
 	 * extra functionality on construction.
 	 */
