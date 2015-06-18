@@ -52,24 +52,21 @@ class Console extends WriterAbstract {
 	public function init(Configuration $config) {
 
 		//check to see if the config contains a set useMinErrorLevel and that its a boolean value.
-		$this->useMinErrorLevel = $config->get('useMinErrorLevel', true, function($useMinErrorLevel){
-			return is_bool($useMinErrorLevel);
-		});
-
-		$uml = $this->useMinErrorLevel;
+		$this->useMinErrorLevel = $config->get('useMinErrorLevel', true);
 
 		//check to see if the minErrorLevel is set and that its a level instance and useMinErrorLevel is true.
-		$this->minErrorLevel = $config->get('minErrorLevel', Level::error(), function($level) use ($uml) {
-			return ($level instanceof Level && $uml);
+		$this->minErrorLevel = $config->get('minErrorLevel', Level::error(), function($level) {
+			return ($level instanceof Level);
 		});
 
 		//check that the user provided a valid target stream.
-		$this->target = $config->get('target', self::STDOUT, function($target) use ($uml) {
+		$this->target = $config->get('target', self::STDOUT, function($target) {
 			return isset($target) && in_array($target, 
 				array(
 					self::STDOUT, 
 					self::STDERR
-				)) && !$uml;
+				)
+			);
 		});
 
 		//check if the config contains a valid pattern.
