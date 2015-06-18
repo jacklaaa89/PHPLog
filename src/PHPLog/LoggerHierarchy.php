@@ -140,8 +140,6 @@ class LoggerHierarchy extends ExtraAbstract {
 			}
 		}
 
-		die(var_dump($logger));
-
 		return $logger;
 	}
 }
