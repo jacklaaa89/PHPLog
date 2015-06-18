@@ -121,7 +121,7 @@ class LoggerHierarchy extends ExtraAbstract {
 		if(isset($config['writers'])) {
 			//set all of the valid writers.
 			foreach($config['writers'] as $name => $writerConf) {
-				$className = '\\PHPLog\\Writer\\'.$name;
+				$className = 'PHPLog\\Writer\\'.$name;
 				if(class_exists($className)) {
 					$writer = new $className($writerConf);
 					$logger->addWriter($writer);
@@ -132,7 +132,7 @@ class LoggerHierarchy extends ExtraAbstract {
 		if(isset($config['filters'])) {
 			//set all valid filters.
 			foreach($config['filters'] as $name => $filterConf) {
-				$className = '\\PHPLog\\Filter\\'.$name;
+				$className = 'PHPLog\\Filter\\'.$name;
 				if(class_exists($className)) {
 					$filter = new $className($writerConf);
 					$logger->addFilter($filter);
