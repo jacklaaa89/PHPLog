@@ -273,6 +273,8 @@ class Logger extends ExtraAbstract {
 	 */
 	public function addWriter($writer) {
 
+		die(var_dump($writer));
+
 		if(!($writer instanceof WriterAbstract) || !($writer instanceof \Closure)) {
 			return;
 		}
