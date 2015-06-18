@@ -27,7 +27,7 @@ abstract class WriterAbstract extends Extension {
 	public function __construct($config = array()) {
 		parent::__construct();
 
-		if(!is_array($config) || !($config instanceof Configuration)) {
+		if(!is_array($config) && !($config instanceof Configuration)) {
 			$config = array();
 		}
 
