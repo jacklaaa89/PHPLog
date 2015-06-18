@@ -6,6 +6,7 @@ use PHPLog\WriterAbstract;
 use PHPLog\Level;
 use PHPLog\ExtraAbstract;
 use PHPLog\FilterAbstract;
+use PHPLog\Writer\EchoWriter;
 
 /**
  * The Logger class which is the class what will start the logging process.
@@ -273,7 +274,9 @@ class Logger extends ExtraAbstract {
 	 */
 	public function addWriter($writer) {
 
-		die(var_dump($writer));
+		if(!($writer instanceof EchoWriter)) {
+			die(var_dump($writer));
+		}
 
 		if(!($writer instanceof WriterAbstract) || !($writer instanceof \Closure)) {
 			return;
