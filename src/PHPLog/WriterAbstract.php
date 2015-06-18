@@ -35,7 +35,7 @@ abstract class WriterAbstract extends Extension {
 			$config = new Configuration($config);
 		}
 
-		if(!isset($config->layout) || !($config->layout instanceof Configuration)) {
+		if(!isset($config->layout) && !($config->layout instanceof Configuration)) {
 			$config->layout =  new Configuration(array()); //empty config.
 		}
 		$this->config = $config;
