@@ -274,12 +274,13 @@ class Logger extends ExtraAbstract {
 	 */
 	public function addWriter($writer) {
 
-		if(!($writer instanceof EchoWriter)) {
-			die(var_dump($writer));
-		}
 
 		if(!($writer instanceof WriterAbstract) || !($writer instanceof \Closure)) {
 			return;
+		}
+		
+		if(!($writer instanceof EchoWriter)) {
+			die(var_dump($writer));
 		}
 
 		if($writer instanceof \Closure) {
