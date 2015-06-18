@@ -232,20 +232,9 @@ class Logger extends ExtraAbstract {
 
 	/**
 	 * adds a new filter to the filter chain.
-	 * @param FilterAbstract|Closure $filter the filter to add to the filter chain.
+	 * @param FilterAbstract $filter the filter to add to the filter chain.
 	 */
-	public function addFilter($filter) {
-		if(!($filter instanceof FilterAbstract) || !($filter instanceof \Closure)) {
-			return;
-		}
-
-		if($filter instanceof \Closure) {
-			$filter = $filter();
-			if(!($filter) instanceof FilterAbstract) {
-				return;
-			}
-		}
-
+	public function addFilter(FilterAbstract $filter) {
 		if(!($this->filter) instanceof FilterAbstract) {
 			$this->filter = $filter;
 		} else {
@@ -270,26 +259,9 @@ class Logger extends ExtraAbstract {
 
 	/**
 	 * Adds a new writer for this logger to append to when dealing with log events.
-	 * @param WriterAbstract|Closure $writer the writer to add to this logger.
+	 * @param WriterAbstract $writer the writer to add to this logger.
 	 */
-	public function addWriter($writer) {
-
-
-		if(!($writer instanceof \PHPLog\Writer\WriterAbstract) || !($writer instanceof \Closure)) {
-			return;
-		}
-
-		if(!($writer instanceof EchoWriter)) {
-			die(var_dump($writer));
-		}
-
-		if($writer instanceof \Closure) {
-			$writer = $writer();
-			if(!($writer) instanceof \PHPLog\Writer\WriterAbstract) {
-				return;
-			}
-		}
-
+	public function addWriter(WriterAbstract $writer) {
 		$name = $writer->getName();
 		$this->writers[$name] = $writer;
 	}
