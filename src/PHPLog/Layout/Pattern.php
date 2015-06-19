@@ -474,10 +474,10 @@ class Pattern extends LayoutAbstract {
 
 				$att = $this->formatArgs($att);
 				try {
-						$var = $func($var, $attr);
-					} catch (\Exception $e) {
-						throw new CompilerException('An error occured running a variable function.', $statement);
-					}
+					$var = $func($var, $att);
+				} catch (\Exception $e) {
+					throw new CompilerException('An error occured running a variable function.', $statement);
+				}
 			}
 
 			//push the value in the correct position.

@@ -23,14 +23,14 @@ abstract class LayoutAbstract extends Extension {
 	 * returns the configuration for this layout.
 	 * @return Configuration the layouts configuration.
 	 */
-	public function getConfig() {
+	public final function getConfig() {
 		return $this->config;
 	}
 
 	/**
 	 * gets the logger assocuated with this layout.
 	 */
-	public function getLogger() {
+	public final function getLogger() {
 		return $this->logger;
 	}
 
@@ -38,7 +38,7 @@ abstract class LayoutAbstract extends Extension {
 	 * sets the logger instance with this layout is associated with.
 	 * @param Logger $logger the logger instance.
 	 */
-	public function setLogger(Logger $logger) {
+	public final function setLogger(Logger $logger) {
 		$this->logger = $logger;
 	}
 	
@@ -63,7 +63,7 @@ abstract class LayoutAbstract extends Extension {
 	 * @param mixed the object to render
 	 * @return string the renderered object.
 	 */
-	public function render($object) {
+	public final function render($object) {
 		$renderer = $this->getLogger()->getRenderer();
 		try {
 		 	$value = $renderer->render($object);

@@ -44,7 +44,7 @@ abstract class FilterAbstract {
 	 * a Configuration object.
 	 * @param array $config [optional] the configuration for this object.
 	 */
-	public function __construct($config = array()) {
+	public final function __construct($config = array()) {
 
 		if(!is_array($config) || !($config instanceof Configuration)) {
 			$config = array();
@@ -82,7 +82,7 @@ abstract class FilterAbstract {
 	 * adds a new filter to the filter chain.
 	 * @param FilterAbstract $next the filter to add to the chain. 
 	 */
-	public function addNext(FilterAbstract $next) {
+	public final function addNext(FilterAbstract $next) {
 		if($next instanceof FilterAbstract) {
 			if($this->next !== null) {
 				$this->next->addNext($next);
@@ -97,7 +97,7 @@ abstract class FilterAbstract {
 	 * @return FilterAbstract|null the next filter in the chain or null if
 	 * is no other filter in the filter chain.
 	 */
-	public function getNext() {
+	public final function getNext() {
 		return $this->next;
 	}
 

@@ -27,7 +27,7 @@ abstract class WriterAbstract extends Extension {
 	 * Constructor - base initialisation for a writer instance.
 	 * @param array $config the configuration for this writer instance.
 	 */
-	public function __construct($config = array()) {
+	public final function __construct($config = array()) {
 		parent::__construct();
 
 		if(!is_array($config) && !($config instanceof Configuration)) {
@@ -55,14 +55,14 @@ abstract class WriterAbstract extends Extension {
 	 * returns the configuration passed to this writer.
 	 * @return array the writers configuration.
 	 */
-	public function getConfig() {
+	public final function getConfig() {
 		return $this->config;
 	}
 
 	/**
 	 * gets the logger assocuated with this layout.
 	 */
-	public function getLogger() {
+	public final function getLogger() {
 		return $this->logger;
 	}
 
@@ -70,7 +70,7 @@ abstract class WriterAbstract extends Extension {
 	 * sets the logger instance with this layout is associated with.
 	 * @param Logger $logger the logger instance.
 	 */
-	public function setLogger(Logger $logger) {
+	public final function setLogger(Logger $logger) {
 		$this->logger = $logger;
 		$this->init($this->config);
 	}
@@ -80,7 +80,7 @@ abstract class WriterAbstract extends Extension {
 	 * has a layout attached.
 	 * @param Event $event the log event to log.
 	 */
-	public function log(Event $event) {
+	public final function log(Event $event) {
 		if($this->isClosed()) {
 			return false;
 		}
@@ -104,7 +104,7 @@ abstract class WriterAbstract extends Extension {
 	 * sets the layout to use in this writer.
 	 * @param LayoutAbstract the layout to use in this writer.
 	 */
-	public function setLayout(LayoutAbstract $layout) {
+	public final function setLayout(LayoutAbstract $layout) {
 		$this->layout = $layout;
 		$this->layout->setLogger($this->logger);
 		$this->layout->init($this->config->layout);
@@ -114,7 +114,7 @@ abstract class WriterAbstract extends Extension {
 	 * returns the layout for this writer.
 	 * @return LayoutAbstract the layout.
 	 */
-	public function getLayout() {
+	public final function getLayout() {
 		return $this->layout;
 	}
 }
