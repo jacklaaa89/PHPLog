@@ -16,12 +16,30 @@ abstract class LayoutAbstract extends Extension {
 
 	protected $config;
 
+	/* the instance of the logger so we can access logger resources, the renderer etc. */
+	protected $logger;
+
 	/**
 	 * returns the configuration for this layout.
 	 * @return Configuration the layouts configuration.
 	 */
 	public function getConfig() {
 		return $this->config;
+	}
+
+	/**
+	 * gets the logger assocuated with this layout.
+	 */
+	public function getLogger() {
+		return $this->logger;
+	}
+
+	/**
+	 * sets the logger instance with this layout is associated with.
+	 * @param Logger $logger the logger instance.
+	 */
+	public function setLogger(Logger $logger) {
+		$this->logger = $logger;
 	}
 	
 	/** 
@@ -46,9 +64,9 @@ abstract class LayoutAbstract extends Extension {
 	 * @return string the renderered object.
 	 */
 	public function render($object) {
-		$renderer = Logger::getRenderer();
+		$renderer = $this->getLogger()->getRenderer();
 		try {
-		 	$renderer->render($object);
+		 	$value = $renderer->render($object);
 		} catch (\Exception $e) {
 			throw new \Exception($e->getMessage());
 		}

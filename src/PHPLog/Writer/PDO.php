@@ -98,6 +98,7 @@ class PDO extends WriterAbstract {
 			$statement = $this->connection->prepare($this->insertStatement);
 			if(!$statement->execute($bind)) {
 				//get the errors.
+				throw new \Exception($statement->errorInfo());
 			}
 			$this->connection->commit();
 		} catch (\Exception $e) {

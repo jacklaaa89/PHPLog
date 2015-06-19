@@ -133,13 +133,13 @@ class LoggerHierarchy extends ExtraAbstract {
 						return;
 					}
 					if(!class_exists($renderer)) {
-						$className = '\\PHPLog\\Renderer\\'.$renderer;
-						if(!class_exists($className)) {
+						$renderer = '\\PHPLog\\Renderer\\'.$renderer;
+						if(!class_exists($renderer)) {
 							return;
 						}
 					}
 
-					$renderer = new $className();
+					$renderer = new $renderer();
 				}
 
 				$logger->addRenderer($class, $renderer);

@@ -301,6 +301,10 @@ class Logger extends ExtraAbstract {
 		}
 
 		$name = $writer->getName();
+
+		//add this as the logger for this writer.
+		$writer->setLogger($this);
+
 		$this->writers[$name] = $writer;
 	}
 

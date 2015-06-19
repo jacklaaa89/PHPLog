@@ -20,6 +20,9 @@ abstract class WriterAbstract extends Extension {
 	/* the configuration passed to this writer. */
 	protected $config;
 
+	/* the logger associated with this writer. */
+	protected $logger;
+
 	/**
 	 * Constructor - base initialisation for a writer instance.
 	 * @param array $config the configuration for this writer instance.
@@ -40,8 +43,6 @@ abstract class WriterAbstract extends Extension {
 		}
 		$this->config = $config;
 
-		$this->init($config);
-
 	}
 
 	/**
@@ -56,6 +57,22 @@ abstract class WriterAbstract extends Extension {
 	 */
 	public function getConfig() {
 		return $this->config;
+	}
+
+	/**
+	 * gets the logger assocuated with this layout.
+	 */
+	public function getLogger() {
+		return $this->logger;
+	}
+
+	/**
+	 * sets the logger instance with this layout is associated with.
+	 * @param Logger $logger the logger instance.
+	 */
+	public function setLogger(Logger $logger) {
+		$this->logger = $logger;
+		$this->init($this->config);
 	}
 
 	/** 
@@ -89,6 +106,7 @@ abstract class WriterAbstract extends Extension {
 	 */
 	public function setLayout(LayoutAbstract $layout) {
 		$this->layout = $layout;
+		$this->layout->setLogger($this->logger);
 		$this->layout->init($this->config->layout);
 	}
 
