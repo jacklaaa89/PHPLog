@@ -130,7 +130,6 @@ class Console extends WriterAbstract {
 		if(!is_resource($this->handle)) {
 			$this->close();
 		}
-
 	}
 
 	/**

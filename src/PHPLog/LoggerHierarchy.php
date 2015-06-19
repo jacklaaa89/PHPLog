@@ -35,9 +35,6 @@ class LoggerHierarchy extends ExtraAbstract {
 	*/
 	protected $threshold;
 
-	/* the global renderer instance. */
-	protected $renderer;
-
 	/**
 	 * Constructor - initializes a new hierarchy and attaches the root.
 	 * @param Root [optional] an instance of a root logger, or a new one if one
@@ -100,17 +97,6 @@ class LoggerHierarchy extends ExtraAbstract {
 	}
 
 	/**
-	 * gets the global renderer instance.
-	 * @return Renderer the global renderer instance.
-	 */
-	public function getRenderer() {
-		if(!isset($this->renderer)) {
-			$this->renderer = Renderer::newInstance();
-		}
-		return $this->renderer;
-	}
-
-	/**
 	 * sets any initial configuration for a logger.
 	 * @param Logger $logger the logger to configure.
 	 * @param array $config the config to configure the logger with.
@@ -137,6 +123,27 @@ class LoggerHierarchy extends ExtraAbstract {
 					$filter = new $className($writerConf);
 					$logger->addFilter($filter);
 				}
+			}
+		}
+
+		if(isset($config['renderers'])) {
+			foreach($config['renderers'] as $class => $renderer) {
+				if(!($renderer instanceof RendererInterface)) {
+					if(!is_string($renderer)) {
+						return;
+					}
+					if(!class_exists($renderer)) {
+						$className = '\\PHPLog\\Renderer\\'.$renderer;
+						if(!class_exists($className)) {
+							return;
+						}
+					}
+
+					$renderer = new $className();
+				}
+
+				$logger->addRenderer($class, $renderer);
+
 			}
 		}
 

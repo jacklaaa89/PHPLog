@@ -2,7 +2,6 @@
 
 namespace PHPLog\Writer;
 
-
 use PHPLog\Writer\File;
 use PHPLog\Event;
 use PHPLog\Layout\Bind;

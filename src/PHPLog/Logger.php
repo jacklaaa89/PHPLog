@@ -7,6 +7,7 @@ use PHPLog\Level;
 use PHPLog\ExtraAbstract;
 use PHPLog\FilterAbstract;
 use PHPLog\Writer\EchoWriter;
+use PHPLog\Renderer;
 
 /**
  * The Logger class which is the class what will start the logging process.
@@ -38,6 +39,8 @@ class Logger extends ExtraAbstract {
 	/* the writers this logger should attempt to append to. */
 	private $writers = array();
 
+	private $renderer;
+
 	/* boolean flag whether to allow propogation to the parent 
 	   if this logger cannot handle the log, this would be the case if:
 	   
@@ -58,6 +61,17 @@ class Logger extends ExtraAbstract {
 		$this->name = $name;
 		//default to all logs.
 		$this->setLevel(Level::all());
+	}
+
+	/**
+	 * gets the global renderer instance.
+	 * @return Renderer the global renderer instance.
+	 */
+	public function getRenderer() {
+		if(!isset($this->renderer)) {
+			$this->renderer = Renderer::newInstance();
+		}
+		return $this->renderer;
 	}
 
 	/**
@@ -373,8 +387,7 @@ class Logger extends ExtraAbstract {
 	 * This method also handles adding the logger to the LoggerHierarchy and maintaining
 	 * its parent logger.
 	 * @param string $name the name of the logger.
-	 * @param array $config [optional] any global config to apply to all writers in this
-	 * logger.
+	 * @param array $config [optional] initial config for this writer.
 	 * @return Logger either a new or existing logger with the {$name} provided.
 	 */
 	public static function getLogger($name, $config = array()) {
@@ -391,15 +404,6 @@ class Logger extends ExtraAbstract {
 			self::$hierarchy = new LoggerHierarchy();
 		}
 		return self::$hierarchy;
-	}
-
-	/**
-	 * returns the current log renderer instance, this is shared between all 
-	 * logger instances.
-	 * @return Renderer the global instance of a log renderer.
-	 */
-	public static function getRenderer() {
-		return self::getHierarchy()->getRenderer();
 	}
 
 	/**
@@ -431,15 +435,15 @@ class Logger extends ExtraAbstract {
 	 * renderers are shared between all loggers in the current
 	 * hierarchy.
 	 */
-	public static function addRenderer($class, $renderer, $disableInheritanceRender = false) {
-		self::getRenderer()->addRenderer($class, $renderer, $disableInheritanceRender);
+	public function addRenderer($class, $renderer, $disableInheritanceRender = false) {
+		$this->getRenderer()->addRenderer($class, $renderer, $disableInheritanceRender);
 	}
 
 	/**
 	 * removes a new global renderer.
 	 */
-	public static function removeRenderer($class) {
-		self::getRenderer()->removeRenderer($class);
+	public function removeRenderer($class) {
+		$this->getRenderer()->removeRenderer($class);
 	}
 
 	/**
@@ -447,15 +451,15 @@ class Logger extends ExtraAbstract {
 	 * specific renderer to use for an object.
 	 * @param RendererInterface the renderer to use as the default renderer.
 	 */
-	public static function setDefaultRenderer($default) {
-		self::getRenderer()->setDefaultRenderer($default);
+	public function setDefaultRenderer($default) {
+		$this->getRenderer()->setDefaultRenderer($default);
 	}
 
 	/**
 	 * resets the global default renderer.
 	 */
 	public function resetDefaultRenderer() {
-		self::getRenderer()->resetDefaultRenderer();
+		$this->getRenderer()->resetDefaultRenderer();
 	}
 
 }
