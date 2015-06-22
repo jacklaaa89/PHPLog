@@ -19,10 +19,7 @@ class EchoWriter extends WriterAbstract {
 	 * @param array config the config for this writer.
 	 */
 	public function init(Configuration $config) {
-		$pattern = 'LOG - %level - %message|u - %date';
-		if(!isset($this->getConfig()->layout->pattern)) {
-			$this->getConfig()->layout->pattern = $pattern;
-		}
+		$this->getLayoutConfig()->set('pattern', 'LOG - %level - %message|u - %date', true);
 		$this->setLayout(new Pattern());
 	}
 	

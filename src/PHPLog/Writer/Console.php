@@ -69,10 +69,7 @@ class Console extends WriterAbstract {
 			);
 		});
 
-		//check if the config contains a valid pattern.
-		if(!isset($this->getConfig()->layout->pattern)) {
-			$this->getConfig()->layout->pattern = $this->pattern;
-		}
+		$this->getLayoutConfig()->set('pattern', $this->pattern, true);
 
 		//set the layout for this writer.
 		$this->setLayout(new Pattern());

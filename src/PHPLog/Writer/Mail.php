@@ -158,9 +158,7 @@ class Mail extends WriterAbstract {
 
 
 		//set the layout.
-		if(!isset($config->layout['pattern'])) {
-			$this->getConfig()->layout->pattern = $this->pattern;
-		}
+		$this->getLayoutConfig()->set('pattern', $this->pattern, true);
 
 		$this->setLayout(new Pattern());
 

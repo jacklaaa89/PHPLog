@@ -46,9 +46,8 @@ class Syslog extends WriterAbstract {
 		$this->options = $this->getConfig()->get('options', 'PID|CONS');
 		$this->facility = $this->getConfig()->get('facility', 'USER');
 		$this->applicationIdentifier = $this->getConfig()->get('ident', $this->applicationIdentifier);
-		if(!isset($this->getConfig()->layout->pattern)) {
-			$this->getConfig()->layout->pattern = $this->pattern;
-		}
+		
+		$this->getLayoutConfig()->set('pattern', $this->pattern, true);
 
 		$this->setLayout(new Pattern());
 

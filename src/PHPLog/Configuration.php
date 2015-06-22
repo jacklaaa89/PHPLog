@@ -74,6 +74,23 @@ class Configuration implements \ArrayAccess, \Countable, \Iterator {
 	}
 
 	/**
+	 * sets a variable in the config.
+	 * @param mixed $index the index of the variable.
+	 * @param mixed $value the value to assign to the key.
+	 * @param boolean $onlySetOnEmpty [optional] whether to set the variable regardless or
+	 * only if the variable isnt already defined in the config.
+	 */
+	public function set($index, $value, $onlySetOnEmpty = false) {
+		if($onlySetOnEmpty) {
+			if(!$this->offsetExists($index)) {
+				$this->offsetSet($index, $value);
+			}
+			return;
+		}
+		$this->offsetSet($index, $value);
+	}
+
+	/**
 	 * @see \ArrayAccess::offsetSet()
 	 */
 	public function offsetSet($index, $value) {

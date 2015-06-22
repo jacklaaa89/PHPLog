@@ -117,4 +117,12 @@ abstract class WriterAbstract extends Extension {
 	public final function getLayout() {
 		return $this->layout;
 	}
+
+	/**
+	 * gets the configuration for the layout.
+	 * @return Configuration the layout configuration.
+	 */
+	public function getLayoutConfig() {
+		return $this->config->layout;
+	}
 }
