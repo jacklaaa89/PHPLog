@@ -12,19 +12,23 @@ use PHPLog\Configuration;
  * @version 1
  * @author Jack Timblin
  */
-class DenyAll extends FilterAbstract {
+class DenyAll extends FilterAbstract
+{
 
-	/**
-	 * Constructor - initializes the filter.
-	 * @param array $config the configuration for this filter.
-	 */
-	public function init(Configuration $config) {}
+    /**
+     * Constructor - initializes the filter.
+     * @param array $config the configuration for this filter.
+     */
+    public function init(Configuration $config) 
+    {
+    }
 
-	/**
-	 * @see \PHPLog\FilterAbstract::decide()
-	 */
-	public function decide(Event $event) {
-		return FilterAbstract::DENY;
-	}
+    /**
+     * @see \PHPLog\FilterAbstract::decide()
+     */
+    public function decide(Event $event) 
+    {
+        return FilterAbstract::DENY;
+    }
 
 }

@@ -21,84 +21,89 @@ use PHPLog\Configuration;
  * Event 1 is thus blocked and Event 2 is logged to each of the writers.
  *
  * @version 1
- * @author Jack Timblin
+ * @author  Jack Timblin
  */
-abstract class FilterAbstract {
-	
-	/* the next filter in the filter chain. */
-	protected $next;
+abstract class FilterAbstract
+{
+    
+    /* the next filter in the filter chain. */
+    protected $next;
 
-	/* ACCEPT - means that the filter passed and the log should be written. */
-	const ACCEPT = 1;
+    /* ACCEPT - means that the filter passed and the log should be written. */
+    const ACCEPT = 1;
 
-	/* NEUTRAL - means the filter could not ACCEPT or DENY the log and the 
+    /* NEUTRAL - means the filter could not ACCEPT or DENY the log and the 
        log event should be passed down the filter chain.
-	 */
-	const NEUTRAL = 0;
+    */
+    const NEUTRAL = 0;
 
-	/* DENY - means that the filter failed and the log should not be written. */
-	const DENY = -1;
+    /* DENY - means that the filter failed and the log should not be written. */
+    const DENY = -1;
 
-	/**
-	 * Constructor - initializes the filter, and converts the array config into 
-	 * a Configuration object.
-	 * @param array $config [optional] the configuration for this object.
-	 */
-	public final function __construct($config = array()) {
+    /**
+     * Constructor - initializes the filter, and converts the array config into 
+     * a Configuration object.
+     * @param array $config [optional] the configuration for this object.
+     */
+    public final function __construct($config = array()) 
+    {
 
-		if(!is_array($config) || !($config instanceof Configuration)) {
-			$config = array();
-		}
+        if(!is_array($config) || !($config instanceof Configuration)) {
+            $config = array();
+        }
 
-		if(!($config instanceof Configuration)) {
-			$config = new Configuration($config);
-		}
+        if(!($config instanceof Configuration)) {
+            $config = new Configuration($config);
+        }
 
-		$this->config = $config;
+        $this->config = $config;
 
-		$this->init($config);
-	}
+        $this->init($config);
+    }
 
-	/**
-	 * initializes the filter, this is required as 9/10 filters will
-	 * need some sort of configuration.
-	 * @param Configuration $config the configuration for the filter.
-	 */
-	public abstract function init(Configuration $config);
+    /**
+     * initializes the filter, this is required as 9/10 filters will
+     * need some sort of configuration.
+     * @param Configuration $config the configuration for the filter.
+     */
+    public abstract function init(Configuration $config);
 
-	/**
-	 * This is the function filters should override to determine if a
-	 * log event either is ACCEPT or DENY or it could not be determined and
-	 * passed down the filter chain. This method defaultly returns NEUTRAL if the
-	 * filter that extends this class does not override this method.
-	 * @param Event $event the event to filter.
-	 * @return int either ACCEPT/DENY/NEUTRAL based on the outcome of the filtering.
-	 */
-	public function decide(Event $event) {
-		return self::NEUTRAL;
-	}
+    /**
+     * This is the function filters should override to determine if a
+     * log event either is ACCEPT or DENY or it could not be determined and
+     * passed down the filter chain. This method defaultly returns NEUTRAL if the
+     * filter that extends this class does not override this method.
+     * @param Event $event the event to filter.
+     * @return int either ACCEPT/DENY/NEUTRAL based on the outcome of the filtering.
+     */
+    public function decide(Event $event) 
+    {
+        return self::NEUTRAL;
+    }
 
-	/**
-	 * adds a new filter to the filter chain.
-	 * @param FilterAbstract $next the filter to add to the chain. 
-	 */
-	public final function addNext(FilterAbstract $next) {
-		if($next instanceof FilterAbstract) {
-			if($this->next !== null) {
-				$this->next->addNext($next);
-			} else {
-				$this->next = $next;
-			}
-		}
-	}
+    /**
+     * adds a new filter to the filter chain.
+     * @param FilterAbstract $next the filter to add to the chain. 
+     */
+    public final function addNext(FilterAbstract $next) 
+    {
+        if($next instanceof FilterAbstract) {
+            if($this->next !== null) {
+                $this->next->addNext($next);
+            } else {
+                $this->next = $next;
+            }
+        }
+    }
 
-	/**
-	 * gets the next filter in the chain.
-	 * @return FilterAbstract|null the next filter in the chain or null if
-	 * is no other filter in the filter chain.
-	 */
-	public final function getNext() {
-		return $this->next;
-	}
+    /**
+     * gets the next filter in the chain.
+     * @return FilterAbstract|null the next filter in the chain or null if
+     * is no other filter in the filter chain.
+     */
+    public final function getNext() 
+    {
+        return $this->next;
+    }
 
 } 

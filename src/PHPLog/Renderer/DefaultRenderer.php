@@ -11,31 +11,33 @@ use PHPLog\RendererInterface;
  * @version 1
  * @author Jack Timblin
  */
-class DefaultRenderer implements RendererInterface {
+class DefaultRenderer implements RendererInterface
+{
 
-	/**
-	 * @see PHPLog\RendererInterface::render()
-	 */
-	public function render($object) {
+    /**
+     * @see PHPLog\RendererInterface::render()
+     */
+    public function render($object) 
+    {
 
-		//attempt to cast the object to a string.
-		$object = ($object !== null) ? $object : '';
+        //attempt to cast the object to a string.
+        $object = ($object !== null) ? $object : '';
 
-		//check to see if it has a method __tostring
-		if(is_object($object) && method_exists($object, '__toString')) {
-			return (string) $object;
-		}
+        //check to see if it has a method __tostring
+        if(is_object($object) && method_exists($object, '__toString')) {
+            return (string) $object;
+        }
 
-		//check to see if this variable is an array or object.
-		if(is_array($object) || is_object($object)) {
-			ob_start();
-			var_dump($object);
-			$object = ob_get_clean();
-		}
-		$object = (!is_string($object)) ? (string) $object : $object;
+        //check to see if this variable is an array or object.
+        if(is_array($object) || is_object($object)) {
+            ob_start();
+            var_dump($object);
+            $object = ob_get_clean();
+        }
+        $object = (!is_string($object)) ? (string) $object : $object;
 
-		return $object;
+        return $object;
 
-	}
+    }
 
 }

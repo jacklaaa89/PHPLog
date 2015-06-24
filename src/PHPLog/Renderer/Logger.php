@@ -11,24 +11,26 @@ use PHPLog\Logger as LoggerInstance;
  * @version 1
  * @author Jack Timblin
  */
-class Logger implements RendererInterface {
+class Logger implements RendererInterface
+{
 
-	/**
-	 * @see PHPLog\RendererInterface::render()
-	 */
-	public function render($object) {
+    /**
+     * @see PHPLog\RendererInterface::render()
+     */
+    public function render($object) 
+    {
 
-		if($object instanceof LoggerInstance) {
-			if(method_exists($object, '__toString')) {
-				return (string) $object;
-			}
-			ob_clean();
-			var_dump($object);
-			return ob_get_clean();
-		}
+        if($object instanceof LoggerInstance) {
+            if(method_exists($object, '__toString')) {
+                return (string) $object;
+            }
+            ob_clean();
+            var_dump($object);
+            return ob_get_clean();
+        }
 
-		return '';
+        return '';
 
-	}
+    }
 
 }

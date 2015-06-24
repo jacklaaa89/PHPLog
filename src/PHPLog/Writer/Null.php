@@ -13,16 +13,20 @@ use PHPLog\Configuration;
  * @version 1
  * @author Jack Timblin
  */
-class Null extends WriterAbstract {
+class Null extends WriterAbstract
+{
 
-	public function init(Configuration $config) {}
+    public function init(Configuration $config) 
+    {
+    }
 
-	/**
-	 * This renderer completely disables logging, and just returns true.
-	 * Is good to firmly ignore below a certain threshold and also for the Root Logger.
-	 */
-	public function append(Event $event) {
-		return true;
-	}
+    /**
+     * This renderer completely disables logging, and just returns true.
+     * Is good to firmly ignore below a certain threshold and also for the Root Logger.
+     */
+    public function append(Event $event) 
+    {
+        return true;
+    }
 
 }

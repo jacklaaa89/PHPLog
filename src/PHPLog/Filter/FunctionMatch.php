@@ -13,45 +13,48 @@ use PHPLog\Configuration;
  * @version 1
  * @author Jack Timblin
  */
-class FunctionMatch extends FilterAbstract {
+class FunctionMatch extends FilterAbstract
+{
 
-	/* the function name to match, this is case sensitive */
-	private $function;
+    /* the function name to match, this is case sensitive */
+    private $function;
 
-	/* whether to accept this logging event on a match. */
-	private $acceptOnMatch = true;
+    /* whether to accept this logging event on a match. */
+    private $acceptOnMatch = true;
 
-	/**
-	 * Constructor - initializes the filter.
-	 * @param array $config the configuration for this filter.
-	 */
-	public function init(Configuration $config) {
+    /**
+     * Constructor - initializes the filter.
+     * @param array $config the configuration for this filter.
+     */
+    public function init(Configuration $config) 
+    {
 
-		$this->function = $config->get('function', null);
-		$this->function = (isset($this->function)) ? trim($this->function, ' \\') : null;
+        $this->function = $config->get('function', null);
+        $this->function = (isset($this->function)) ? trim($this->function, ' \\') : null;
 
-		$this->acceptOnMatch = $config->get('acceptOnMatch', true);
-	}
+        $this->acceptOnMatch = $config->get('acceptOnMatch', true);
+    }
 
-	/**
-	 * @see \PHPLog\FilterAbstract::decide()
-	 */
-	public function decide(Event $event) {
+    /**
+     * @see \PHPLog\FilterAbstract::decide()
+     */
+    public function decide(Event $event) 
+    {
 
-		if($this->function === null) {
-			return FilterAbstract::NEUTRAL;
-		}
+        if($this->function === null) {
+            return FilterAbstract::NEUTRAL;
+        }
 
-		if($event->getFunction() === null) {
-			return FilterAbstract::NEUTRAL;
-		}
+        if($event->getFunction() === null) {
+            return FilterAbstract::NEUTRAL;
+        }
 
-		if($event->getFunction() == $this->function) {
-			return ($this->acceptOnMatch) ? FilterAbstract::ACCEPT : FilterAbstract::DENY;
-		}
+        if($event->getFunction() == $this->function) {
+            return ($this->acceptOnMatch) ? FilterAbstract::ACCEPT : FilterAbstract::DENY;
+        }
 
-		return FilterAbstract::NEUTRAL;
+        return FilterAbstract::NEUTRAL;
 
-	}
+    }
 
 }

@@ -14,28 +14,31 @@ use PHPLog\Configuration;
  * @version 1
  * @author Jack Timblin
  */
-class Root extends Logger {
-	
-	/**
-	 * Constructor - initializes this logger with a level and a
-	 * default EchoWriter writer (which means all logs are printed on screen)
-	 * @param Level $level [optional] the level in which to set the root logger.
-	 * defaulted to ALL.
-	 */
-	public function __construct(Level $level = null) {
-		parent::__construct('root');
-		if($level == null) {
-			$level = Level::all();
-		}
-		$this->setLevel($level);
-	}
+class Root extends Logger
+{
+    
+    /**
+     * Constructor - initializes this logger with a level and a
+     * default EchoWriter writer (which means all logs are printed on screen)
+     * @param Level $level [optional] the level in which to set the root logger.
+     * defaulted to ALL.
+     */
+    public function __construct(Level $level = null) 
+    {
+        parent::__construct('root');
+        if($level == null) {
+            $level = Level::all();
+        }
+        $this->setLevel($level);
+    }
 
-	/**
-	 * sets any writers, this has to be done after construction 
-	 * so that the root object exists to attach to the writers.
-	 */
-	public function init() {
-		$this->addWriter(new EchoWriter());
-	}
+    /**
+     * sets any writers, this has to be done after construction 
+     * so that the root object exists to attach to the writers.
+     */
+    public function init() 
+    {
+        $this->addWriter(new EchoWriter());
+    }
 
 }

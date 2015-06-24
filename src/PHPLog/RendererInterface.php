@@ -8,12 +8,13 @@ namespace PHPLog;
  * @version 1
  * @author Jack Timblin
  */
-interface RendererInterface {
+interface RendererInterface
+{
 
-	/**
-	 * attempts to render the object passed to it into its string representation.
-	 * @param mixed $object the object to render.
-	 * @return string the string representation of $object.
-	 */
-	public function render($object);
+    /**
+     * attempts to render the object passed to it into its string representation.
+     * @param mixed $object the object to render.
+     * @return string the string representation of $object.
+     */
+    public function render($object);
 }

@@ -13,45 +13,48 @@ use PHPLog\Configuration;
  * @version 1
  * @author Jack Timblin
  */
-class ClassMatch extends FilterAbstract {
+class ClassMatch extends FilterAbstract
+{
 
-	/* the class name to match, this is namespaced case sensitive. */
-	private $className;
+    /* the class name to match, this is namespaced case sensitive. */
+    private $className;
 
-	/* whether to accept the logging event on match. */
-	private $acceptOnMatch = true;
+    /* whether to accept the logging event on match. */
+    private $acceptOnMatch = true;
 
-	/**
-	 * Constructor - initializes the filter.
-	 * @param array $config the configuration for this filter.
-	 */
-	public function init(Configuration $config) {
+    /**
+     * Constructor - initializes the filter.
+     * @param array $config the configuration for this filter.
+     */
+    public function init(Configuration $config) 
+    {
 
-		$this->className = $config->get('class', null);
-		$this->className = (isset($this->className)) ? trim($this->className, ' \\') : null;
+        $this->className = $config->get('class', null);
+        $this->className = (isset($this->className)) ? trim($this->className, ' \\') : null;
 
-		$this->acceptOnMatch = $config->get('acceptOnMatch', true);
-	}
+        $this->acceptOnMatch = $config->get('acceptOnMatch', true);
+    }
 
-	/**
-	 * @see \PHPLog\FilterAbstract::decide()
-	 */
-	public function decide(Event $event) {
+    /**
+     * @see \PHPLog\FilterAbstract::decide()
+     */
+    public function decide(Event $event) 
+    {
 
-		if($this->className === null) {
-			return FilterAbstract::NEUTRAL;
-		}
+        if($this->className === null) {
+            return FilterAbstract::NEUTRAL;
+        }
 
-		if($event->getClass() === null) {
-			return FilterAbstract::NEUTRAL;
-		}
+        if($event->getClass() === null) {
+            return FilterAbstract::NEUTRAL;
+        }
 
-		if($event->getClass() == $this->className) {
-			return ($this->acceptOnMatch) ? FilterAbstract::ACCEPT : FilterAbstract::DENY;
-		}
+        if($event->getClass() == $this->className) {
+            return ($this->acceptOnMatch) ? FilterAbstract::ACCEPT : FilterAbstract::DENY;
+        }
 
-		return FilterAbstract::NEUTRAL;
+        return FilterAbstract::NEUTRAL;
 
-	}
+    }
 
 }

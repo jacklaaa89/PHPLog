@@ -9,19 +9,21 @@ use PHPLog\RendererInterface;
  * @version 1
  * @author Jack Timblin
  */
-class Throwable implements RendererInterface {
+class Throwable implements RendererInterface
+{
 
-	/**
-	 * @see PHPLog\RendererInterface::render()
-	 */
-	public function render($object) {
+    /**
+     * @see PHPLog\RendererInterface::render()
+     */
+    public function render($object) 
+    {
 
-		if($object instanceof \Exception) {
-			return 'Exception - ' . $object->getMessage() . ' - Thrown on Line: ' . $object->getLine() . ' in file: ' . $object->getFile();
-		}
+        if($object instanceof \Exception) {
+            return 'Exception - ' . $object->getMessage() . ' - Thrown on Line: ' . $object->getLine() . ' in file: ' . $object->getFile();
+        }
 
-		return $string;
+        return $string;
 
-	}
+    }
 
 }
