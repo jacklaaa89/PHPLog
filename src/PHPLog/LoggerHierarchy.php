@@ -37,22 +37,20 @@ class LoggerHierarchy extends ExtraAbstract {
 	protected $uniqueIDs = array();
 
 	/**
-	 * Constructor - initializes a new hierarchy and attaches the root.
-	 * @param Root [optional] an instance of a root logger, or a new one if one
-	 * is not provided.
-	 */
-	public function __construct($root = null) {
-		$this->root = ($root !== null) ? $root : new Root();
-		$this->setThreshold(Level::all());
-	}
-
-	/**
 	 * retrieves or creates a new logger by its name. A logger is added to the
 	 * hierarchy and its parent is assigned during the retrieval.
 	 * @param string $name the name of the logger.
 	 * @return Logger the new or existing Logger instance.
 	 */
 	public function getLogger($name, $config) {
+
+		if(!isset($this->root)) {
+			$this->root = new Root();
+			$this->setThreshold(Level::all());
+		}
+
+		$this->root->init();
+
 		if(!isset($this->loggers[$name])) {
 			$logger = new Logger($name);
 
@@ -72,8 +70,8 @@ class LoggerHierarchy extends ExtraAbstract {
 				}
 			}
 
-			$logger = $this->setInitialConfiguration($logger, $config);
 			$this->loggers[$name] = $logger;
+			$this->setInitialConfiguration($this->loggers[$name], $config);
 
 		}
 
@@ -88,7 +86,7 @@ class LoggerHierarchy extends ExtraAbstract {
 	public function generateUniqueID() {
 		$logger = $this->getLatestLoggerInstance();
 		if($logger instanceof Logger) {
-			$id = base64_encode(hash('sha256', 'PHPLog-'.mt_rand(1, 10).'-'.time()));
+			$id = substr(base64_encode(hash('sha256', 'PHPLog-'.mt_rand(1, 10).'-'.time())), 0, 10);
 			if(array_key_exists($id, $this->uniqueIDs)) {
 				$id = $this->generateUniqueID();
 			}
@@ -104,7 +102,7 @@ class LoggerHierarchy extends ExtraAbstract {
 	 */
 	public final function getLatestLoggerInstance() {
 		if(count($this->loggers) == 0) {
-			return null;
+			return $this->root;
 		}
 		return end($this->loggers);
 	}
@@ -169,7 +167,7 @@ class LoggerHierarchy extends ExtraAbstract {
 	 * @param array $config the config to configure the logger with.
 	 * @return Logger the configured logger.
 	 */
-	private function setInitialConfiguration($logger, $config) {
+	private function setInitialConfiguration(&$logger, $config) {
 
 		if(isset($config['writers'])) {
 			//set all of the valid writers.

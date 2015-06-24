@@ -28,6 +28,13 @@ class Root extends Logger {
 			$level = Level::all();
 		}
 		$this->setLevel($level);
+	}
+
+	/**
+	 * sets any writers, this has to be done after construction 
+	 * so that the root object exists to attach to the writers.
+	 */
+	public function init() {
 		$this->addWriter(new EchoWriter());
 	}
 

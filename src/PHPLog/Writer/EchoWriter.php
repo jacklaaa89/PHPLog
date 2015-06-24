@@ -34,7 +34,7 @@ class EchoWriter extends WriterAbstract {
 		if($this->getLayout() !== null) {
 			$log = $this->getLayout()->parse($event);
 		}
-
+		
 		echo $log;
 		return (strlen($log) > 0);
 	}

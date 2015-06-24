@@ -50,7 +50,7 @@ abstract class WriterAbstract extends Extension {
 	 * @param LayoutAbstract the layout.
 	 */
 	public final function setLayout(LayoutAbstract $layout) {
-		$this->layout = $this->getLayout();
+		$this->layout = $layout;
 		$this->layout->init($this->getLayoutConfig());
 	}
 

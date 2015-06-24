@@ -20,6 +20,12 @@ class DefaultRenderer implements RendererInterface {
 
 		//attempt to cast the object to a string.
 		$object = ($object !== null) ? $object : '';
+
+		//check to see if it has a method __tostring
+		if(is_object($object) && method_exists($object, '__toString')) {
+			return (string) $object;
+		}
+
 		//check to see if this variable is an array or object.
 		if(is_array($object) || is_object($object)) {
 			ob_start();
