@@ -301,10 +301,6 @@ class Logger extends ExtraAbstract {
 		}
 
 		$name = $writer->getName();
-
-		//add this as the logger for this writer.
-		$writer->setLogger($this);
-
 		$this->writers[$name] = $writer;
 	}
 
@@ -464,6 +460,23 @@ class Logger extends ExtraAbstract {
 	 */
 	public function resetDefaultRenderer() {
 		$this->getRenderer()->resetDefaultRenderer();
+	}
+
+	/**
+	 * generates a unique id for a layout or writer to attach to its logger instance.
+	 */
+	public static function generateUniqueID() {
+		return self::getHierarchy()->generateUniqueID();
+	}
+
+	/**
+	 * retrieves a system service.
+	 * @param string $uniqueID the unique identifier for the object requesting the service.
+	 * @param string $serviceIdentifier the service required.
+	 * @return mixed the required system service.
+	 */
+	public static function getSystemService($uniqueID, $serviceIdentifier) {
+		return self::getHierarchy()->getSystemService($uniqueID, $serviceIdentifier);
 	}
 
 }

@@ -49,10 +49,10 @@ class Syslog extends WriterAbstract {
 		
 		$this->getLayoutConfig()->set('pattern', $this->pattern, true);
 
-		$this->setLayout(new Pattern());
-
 		$this->opt = $this->getOption($this->options);
 		$this->fac = $this->getOption($this->facility);
+
+		$this->setLayout(new Pattern());
 
 	}
 

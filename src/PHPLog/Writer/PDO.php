@@ -66,7 +66,6 @@ class PDO extends WriterAbstract {
 		$this->insertStatement = str_replace(':table:', $this->tableName, $this->insertStatement);
 			
 		$this->getLayoutConfig()->set('pattern', $this->pattern, true);
-		
 		$this->setLayout(new Bind());
 
 	}

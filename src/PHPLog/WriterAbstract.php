@@ -6,6 +6,7 @@ use PHPLog\Event;
 use PHPLog\Extension;
 use PHPLog\LayoutAbstract;
 use PHPLog\Configuration;
+use PHPLog\Logger;
 
 /**
  * Base class for all writer implementations.
@@ -19,9 +20,6 @@ abstract class WriterAbstract extends Extension {
 
 	/* the configuration passed to this writer. */
 	protected $config;
-
-	/* the logger associated with this writer. */
-	protected $logger;
 
 	/**
 	 * Constructor - base initialisation for a writer instance.
@@ -43,6 +41,25 @@ abstract class WriterAbstract extends Extension {
 		}
 		$this->config = $config;
 
+		$this->init($this->config);
+
+	}
+
+	/**
+	 * sets the layout to use for this writer.
+	 * @param LayoutAbstract the layout.
+	 */
+	public final function setLayout(LayoutAbstract $layout) {
+		$this->layout = $this->getLayout();
+		$this->layout->init($this->getLayoutConfig());
+	}
+
+	/**
+	 * returns the layout for this writer instance.
+	 * @return LayoutInstance the layout for this writer instance.
+	 */
+	public function getLayout() {
+		return $this->layout;
 	}
 
 	/**
@@ -57,22 +74,6 @@ abstract class WriterAbstract extends Extension {
 	 */
 	public final function getConfig() {
 		return $this->config;
-	}
-
-	/**
-	 * gets the logger assocuated with this layout.
-	 */
-	public final function getLogger() {
-		return $this->logger;
-	}
-
-	/**
-	 * sets the logger instance with this layout is associated with.
-	 * @param Logger $logger the logger instance.
-	 */
-	public final function setLogger(Logger $logger) {
-		$this->logger = $logger;
-		$this->init($this->config);
 	}
 
 	/** 
@@ -99,24 +100,6 @@ abstract class WriterAbstract extends Extension {
 	 * @return boolean <b>TRUE</b> if the writer successfully appended the log, <b>FALSE</b> otherwise.
 	 */
 	public abstract function append(Event $event);
-
-	/**
-	 * sets the layout to use in this writer.
-	 * @param LayoutAbstract the layout to use in this writer.
-	 */
-	public final function setLayout(LayoutAbstract $layout) {
-		$this->layout = $layout;
-		$this->layout->setLogger($this->logger);
-		$this->layout->init($this->config->layout);
-	}
-
-	/**
-	 * returns the layout for this writer.
-	 * @return LayoutAbstract the layout.
-	 */
-	public final function getLayout() {
-		return $this->layout;
-	}
 
 	/**
 	 * gets the configuration for the layout.

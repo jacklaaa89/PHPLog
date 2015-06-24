@@ -6,6 +6,7 @@ use PHPLog\Event;
 use PHPLog\Extension;
 use PHPLog\Renderer;
 use PHPLog\Configuration;
+use PHPLog\Logger;
 
 /**
  * Base class for all layout implementations.
@@ -14,10 +15,10 @@ use PHPLog\Configuration;
  */
 abstract class LayoutAbstract extends Extension {
 
+	/**
+	 * the config for this layout.
+	 */
 	protected $config;
-
-	/* the instance of the logger so we can access logger resources, the renderer etc. */
-	protected $logger;
 
 	/**
 	 * returns the configuration for this layout.
@@ -28,18 +29,11 @@ abstract class LayoutAbstract extends Extension {
 	}
 
 	/**
-	 * gets the logger assocuated with this layout.
+	 * gets the default renderer for this layout.
+	 * @return Renderer the default renderer for this layout.
 	 */
-	public final function getLogger() {
-		return $this->logger;
-	}
-
-	/**
-	 * sets the logger instance with this layout is associated with.
-	 * @param Logger $logger the logger instance.
-	 */
-	public final function setLogger(Logger $logger) {
-		$this->logger = $logger;
+	public function getRenderer() {
+		return $this->getSystemService('renderer');
 	}
 	
 	/** 
@@ -64,7 +58,7 @@ abstract class LayoutAbstract extends Extension {
 	 * @return string the renderered object.
 	 */
 	public final function render($object) {
-		$renderer = $this->getLogger()->getRenderer();
+		$renderer = $this->getRenderer();
 		try {
 		 	$value = $renderer->render($object);
 		} catch (\Exception $e) {

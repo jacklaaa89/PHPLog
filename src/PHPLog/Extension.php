@@ -2,6 +2,8 @@
 
 namespace PHPLog;
 
+use PHPLog\Logger;
+
 /**
  * class which adds default functionality to all writer and layout classes.
  * @version 1
@@ -11,6 +13,9 @@ class Extension {
 
 	/* whether this extension has been shutdown or not. */
 	protected $closed = false;
+
+	/* the uniqueID of this instance. */
+	protected $uniqueID;
 	
 	/**
 	 * gets the name of the extension.
@@ -41,7 +46,27 @@ class Extension {
 	 * Constructor - calls the init() method to allow subclasses to initialize correctly.
 	 */
 	public function __construct() {
+		//generate a uniqueID for this layout.
+		//by deduction a layout would be added to the latest entry in loggers.
+		$this->uniqueID = Logger::generateUniqueID();
 		$this->start();
+	}
+
+	/**
+	 * get the uniqueID of this instance.
+	 * @return string the uniqueID of this instance.
+	 */
+	public final function getUniqueID() {
+		return $this->uniqueID;
+	}
+
+	/** 
+	 * gets a system service from this instances logger.
+	 * @param string $serviceIndentifer the service required.
+	 * @return mixed the service requested.
+	 */
+	public final function getSystemService($serviceIdentifer) {
+		return Logger::getSystemService($this->uniqueID, $serviceIdentifer);
 	}
 
 	/**

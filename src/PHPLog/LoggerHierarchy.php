@@ -9,6 +9,7 @@ use PHPLog\ExtraAbstract;
 use PHPLog\Configuration;
 use PHPLog\WriterAbstract;
 use PHPLog\FilterAbstract;
+use PHPLog\Renderer;
 
 /**
  * This class maintains the hierarchy of loggers that are currently in use.
@@ -24,9 +25,6 @@ class LoggerHierarchy extends ExtraAbstract {
 	/* the loggers in the current hierarchy */
 	protected $loggers = array();
 
-	/* any global configuration to pass to any writer in a logger. */
-	protected $loggerConfig = array();
-
 	/* an instance of the root logger. */
 	protected $root;
 
@@ -34,6 +32,9 @@ class LoggerHierarchy extends ExtraAbstract {
        @todo - currently not in use.
 	*/
 	protected $threshold;
+
+	/* a map of uniquely mapped ids, so layouts and writers can get access to system services. */
+	protected $uniqueIDs = array();
 
 	/**
 	 * Constructor - initializes a new hierarchy and attaches the root.
@@ -81,10 +82,76 @@ class LoggerHierarchy extends ExtraAbstract {
 	}
 
 	/**
+	 * generates a unique id which links a logger to an element attached to it.
+	 * @return string the uniqueID or null if one could not be generated.
+	 */
+	public function generateUniqueID() {
+		$logger = $this->getLatestLoggerInstance();
+		if($logger instanceof Logger) {
+			$id = base64_encode(hash('sha256', 'PHPLog-'.mt_rand(1, 10).'-'.time()));
+			if(array_key_exists($id, $this->uniqueIDs)) {
+				$id = $this->generateUniqueID();
+			}
+			$this->uniqueIDs[$id] = $logger->getName();
+			return $id;
+		}
+		return null;
+	}
+
+	/**
+	 * gets the latest logger instance to be added to the heirarchy.
+	 * @return Logger the latest Logger instance.
+	 */
+	public final function getLatestLoggerInstance() {
+		if(count($this->loggers) == 0) {
+			return null;
+		}
+		return end($this->loggers);
+	}
+
+	/**
+	 * attempts to get a system service from a defined logger instance.
+	 * @param string uniqueID the id of the object attempting to get the service.
+	 * @param string serviceIdentifier the service required.
+	 * @return mixed the found service, or null if not found.
+	 */
+	public function getSystemService($uniqueID, $serviceIdentifier) {
+		if($uniqueID == null || strlen($uniqueID) == 0) {
+			return;
+		}
+
+		if(!array_key_exists($uniqueID, $this->uniqueIDs)) {
+			return;
+		}
+
+		$loggerName = $this->uniqueIDs[$uniqueID];
+
+		if(!array_key_exists($loggerName, $this->loggers)) {
+			return;
+		}
+
+		$logger = $this->loggers[$loggerName];
+
+		if(!($logger instanceof Logger)) {
+			return;
+		}
+
+		$method = 'get'.ucwords(strtolower($serviceIdentifier));
+
+		if(!method_exists($logger, $method)) {
+			return;
+		}
+
+		return $logger->$method();
+
+	}
+
+	/**
 	 * clears the current logger hierarchy
 	 */
 	public function clear() {
 		$this->loggers = array();
+		$this->uniqueIDs = array();
 	}
 
 	/**
