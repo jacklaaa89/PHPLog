@@ -5,6 +5,7 @@ namespace PHPLog;
 use PHPLog\Renderer\DefaultRenderer;
 use PHPLog\Renderer\Logger as LoggerRenderer;
 use PHPLog\Renderer\Throwable;
+use PHPLog\Renderer\ArrayRenderer;
 
 /**
  * This class handles determining what renderer to use on a variable.
@@ -58,8 +59,14 @@ class Renderer
         //the key is the fully qualified name of the class the renderer is for.
         //the value is the renderer instance to deal with it.
         $map = array(
-        '\\RMA\\Core\\Utilities\\Logger\\Logger' => array('renderer' => new LoggerRenderer(), 'disable' => true),
-        '\\Exception'                              => array('renderer' => new Throwable(),       'disable' => true)
+            '\\RMA\\Core\\Utilities\\Logger\\Logger' => array(
+                'renderer' => new LoggerRenderer(), 
+                'disable' => true
+            ),
+            '\\Exception'                            => array(
+                'renderer' => new Throwable(),       
+                'disable' => true
+            )
         );
 
         return new Renderer($map);
@@ -78,12 +85,14 @@ class Renderer
         //set class names for primitive types.
         //double and float are both treated as floats.
         $this->primatives = array(
-        'float' => null,
-        'int' => null,
-        'long' => null,
-        'array' => null,
-        'bool' => null,
-        'null' => null 
+            'float' => null,
+            'int' => null,
+            'long' => null,
+            'array' => array(
+                'renderer' => new ArrayRenderer()
+            ),
+            'bool' => null,
+            'null' => null 
         );
 
         $this->defaultRenderer = new DefaultRenderer();
@@ -97,6 +106,51 @@ class Renderer
      */
     public function render($object) 
     {
+
+        //check to see if the object is traversable.
+        if (is_array($object) || $object instanceof \Traversable) {
+            $v = array();
+            foreach ($object as $key => $obj) {
+                $v[$key] = $this->render($obj);
+            }
+            if (isset($this->primatives['array'])
+                && isset($this->primatives['array']['renderer']) 
+                && $this->primatives['array']['renderer'] instanceof RendererInterface) {
+                    return $this->primatives['array']['renderer']->render($v, JSON_UNESCAPED_SLASHES);
+
+            }
+            //attempt to use the default renderer.
+            //at this point there was no defined renderer for this object.
+            //use the default.
+            if ($this->defaultRenderer instanceof RendererInterface) {
+                try {
+                    $value = $this->defaultRenderer->render($v);
+                    return $value;
+                } catch (\Exception $e) {
+                    throw new \Exception($e->getMessage());
+                }
+            }
+
+            //attempt to cast the object to a string.
+            $object = ($v !== null) ? $v : '';
+
+            //check to see if it has a method __tostring
+            if (is_object($object) && method_exists($object, '__toString')) {
+                return (string) $object;
+            }
+
+            //check to see if this variable is an array or object.
+            if (is_array($object) || is_object($object)) {
+                ob_start();
+                var_dump($object);
+                $object = ob_get_clean();
+            }
+            $object = (!is_string($object)) ? (string) $object : $object;
+
+            return $object;
+
+        }
+
         try {
             //check we dont have any primitive type.
             foreach($this->primatives as $function => $entry) {

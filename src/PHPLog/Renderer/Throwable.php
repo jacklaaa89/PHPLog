@@ -15,7 +15,7 @@ class Throwable implements RendererInterface
     /**
      * @see PHPLog\RendererInterface::render()
      */
-    public function render($object) 
+    public function render($object, $options = 0) 
     {
 
         if($object instanceof \Exception) {

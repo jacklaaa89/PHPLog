@@ -14,7 +14,8 @@ interface RendererInterface
     /**
      * attempts to render the object passed to it into its string representation.
      * @param mixed $object the object to render.
+     * @param int   $options options to pass to the renderer.
      * @return string the string representation of $object.
      */
-    public function render($object);
+    public function render($object, $options = 0);
 }

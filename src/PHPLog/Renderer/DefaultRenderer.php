@@ -17,7 +17,7 @@ class DefaultRenderer implements RendererInterface
     /**
      * @see PHPLog\RendererInterface::render()
      */
-    public function render($object) 
+    public function render($object, $options = 0) 
     {
 
         //attempt to cast the object to a string.

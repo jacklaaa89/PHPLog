@@ -11,6 +11,7 @@ use PHPLog\Exception\CompilerException;
  * This class uses the parser in Pattern to generate a key => value array of values
  * which represent the current log event.
  * @version 1
+ * @version 1.1 - added support for the delimiter in values.
  * @author Jack Timblin
  */
 class Bind extends Pattern
@@ -24,6 +25,9 @@ class Bind extends Pattern
 
     /* the arryay of keys to use in the completed bind. */
     private $keys = array();
+
+    /* the value to replace escaped delimiters with. */
+    const ESCAPED_DELIMITER = '__ED__';
 
     /**
      * initializes the layout using the configuration.
@@ -91,7 +95,11 @@ class Bind extends Pattern
         $params = explode($this->delimiter, parent::parse($e));
         $bind = array();
         for($i = 0; $i < count($params); $i++) {
-            $bind[':'.$this->keys[$i]] = $params[$i];
+
+            //replace the escaped_delimiter with the delimiter.
+            $value = str_replace(self::ESCAPED_DELIMITER, $this->delimiter, $params[$i]);
+
+            $bind[':'.$this->keys[$i]] = $value;
         }
         return $bind;
     }
@@ -108,15 +116,14 @@ class Bind extends Pattern
 
         foreach($props as $prop) {
             $prop->setAccessible(true);
-            $prop->setValue($event, str_replace($this->delimiter, '', $prop->getValue($event)));
+            $prop->setValue($event, str_replace($this->delimiter, self::ESCAPED_DELIMITER, $prop->getValue($event)));
         }
 
         $vars = get_object_vars($event);
 
         foreach($vars as $name => $val) {
-            $event->{$name} = str_replace($this->delimiter, '', $this->render($val));
+            $event->{$name} = str_replace($this->delimiter, self::ESCAPED_DELIMITER, $this->render($val));
         }
-
     }
 
 }
