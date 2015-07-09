@@ -310,4 +310,13 @@ class Renderer
         }
     }
 
+    /**
+     * return all of the renderers attached to this renderer instance.
+     * @return array the array of renderers.
+     */
+    public function getRenderers()
+    {
+        return array_merge($this->primatives, $this->renderers);
+    }
+
 }

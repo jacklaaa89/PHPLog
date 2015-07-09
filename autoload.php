@@ -10,6 +10,7 @@ $autoLoader->registerNamespaces(
 		'PHPLog\Filter'    =>  __DIR__.'/src/PHPLog/Filter',
 		'PHPLog\Layout'    =>  __DIR__.'/src/PHPLog/Layout',
 		'PHPLog\Renderer'  =>  __DIR__.'/src/PHPLog/Renderer',
-		'PHPLog\Writer'    =>  __DIR__.'/src/PHPLog/Writer'
+		'PHPLog\Writer'    =>  __DIR__.'/src/PHPLog/Writer',
+		'Tests'            =>  __DIR__.'/tests/Tests',
 	)
 )->register();
