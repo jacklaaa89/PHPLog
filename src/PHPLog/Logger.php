@@ -569,4 +569,13 @@ class Logger extends ExtraAbstract
         return self::getHierarchy()->getSystemService($uniqueID, $serviceIdentifier);
     }
 
+    /**
+     * returns the currently attached writers.
+     * @return array the writers attached this logger.
+     */
+    public function getWriters()
+    {
+        return $this->writers;
+    }
+
 }

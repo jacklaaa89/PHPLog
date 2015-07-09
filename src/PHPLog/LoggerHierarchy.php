@@ -112,6 +112,15 @@ class LoggerHierarchy extends ExtraAbstract
     }
 
     /**
+     * returns the amount of currently registered loggers.
+     * @return int the amount of registered loggers in this hierarchy.
+     */
+    public function countLoggers() 
+    {
+        return is_array($this->loggers) ? count($this->loggers) : 0;
+    }
+
+    /**
      * attempts to get a system service from a defined logger instance.
      * @param string uniqueID the id of the object attempting to get the service.
      * @param string serviceIdentifier the service required.
