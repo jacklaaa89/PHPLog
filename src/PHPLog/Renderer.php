@@ -120,34 +120,7 @@ class Renderer
 
             }
             //attempt to use the default renderer.
-            //at this point there was no defined renderer for this object.
-            //use the default.
-            if ($this->defaultRenderer instanceof RendererInterface) {
-                try {
-                    $value = $this->defaultRenderer->render($v);
-                    return $value;
-                } catch (\Exception $e) {
-                    throw new \Exception($e->getMessage());
-                }
-            }
-
-            //attempt to cast the object to a string.
-            $object = ($v !== null) ? $v : '';
-
-            //check to see if it has a method __tostring
-            if (is_object($object) && method_exists($object, '__toString')) {
-                return (string) $object;
-            }
-
-            //check to see if this variable is an array or object.
-            if (is_array($object) || is_object($object)) {
-                ob_start();
-                var_dump($object);
-                $object = ob_get_clean();
-            }
-            $object = (!is_string($object)) ? (string) $object : $object;
-
-            return $object;
+            return $this->applyDefaultRenderScheme($v);
 
         }
 
@@ -197,6 +170,18 @@ class Renderer
             throw new \Exception($e->getMessage());
         }
 
+        return $this->applyDefaultRenderScheme($object);
+
+    }
+
+    /**
+     * applies the default rendering scheme if no renderer could be
+     * used on a certain object.
+     * @param mixed $object the object to render into a string.
+     * @return string the object in its string representation.
+     */
+    private function applyDefaultRenderScheme($object) 
+    {
         //at this point there was no defined renderer for this object.
         //use the default.
         if($this->defaultRenderer instanceof RendererInterface) {
@@ -225,7 +210,6 @@ class Renderer
         $object = (!is_string($object)) ? (string) $object : $object;
 
         return $object;
-
     }
 
     /**
