@@ -1,5 +1,7 @@
 # PHPLog #
 
+##### Introduction #####
+
 PHPLog is a Logging Framework written in PHP which has a lot of its ideas from Apache Log4PHP.
 
 It extends on the base functionality that most other logging frameworks provide. Including:
