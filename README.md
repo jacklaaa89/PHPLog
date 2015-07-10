@@ -17,4 +17,12 @@ It extends on the base functionality that most other logging frameworks provide.
 	* **Log Event** - The extras added to the log event scope will be added to that single log event. 
 * Multiple writers can be assigned to a single logger instance.
 
-##### Configuration #####
+##### Getting Started #####
+
+Initializing a new logging instance is done by using the 
+'''php
+$logger = Logger::getLogger('LOGGER_NAME');
+'''
+method. This will return a new logger instance with no other configuration attached.
+
+You can add writers by either providing an array of initial configuration to the getLogger function or using the add* methods on the Logger instance itself.
