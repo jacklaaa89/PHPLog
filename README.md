@@ -1,1 +1,2 @@
-### PHPLog ###
+# PHPLog #
+### Version 1 ###
