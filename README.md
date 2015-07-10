@@ -3,6 +3,7 @@
 PHPLog is a Logging Framework written in PHP which has a lot of its ideas from Apache Log4PHP.
 
 It extends on the base functionality that most other logging frameworks provide. Including:
+
 * A logging hierarchy in which we can have namespaced loggers (i.e a logger can have a parent logger instance)
 * Logging events are propagated down the hierarchy until they are handled (This can be turned off at any point in the chain.)
 * An advanced pattern parser which is used to format Log events as strings.
@@ -13,3 +14,5 @@ It extends on the base functionality that most other logging frameworks provide.
 	* **Logger** - The extras added to the logger scope will be passed to all logging events in the current logger instance.
 	* **Log Event** - The extras added to the log event scope will be added to that single log event. 
 * Multiple writers can be assigned to a single logger instance.
+
+##### Configuration #####
