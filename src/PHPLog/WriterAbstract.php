@@ -48,6 +48,20 @@ abstract class WriterAbstract extends Extension
     }
 
     /**
+     * Sets the logger name for this writer and also 
+     * passes the logger name to the layout attached to this writer.
+     * @param string $loggerName the name of the logger the writer is
+     *                           associated with.
+     */
+    public function setLoggerName($loggerName)
+    {
+        parent::setLoggerName($loggerName);
+        if ($this->layout instanceof LayoutAbstract) {
+            $this->layout->setLoggerName($loggerName);
+        }
+    }
+
+    /**
      * sets the layout to use for this writer.
      * @param LayoutAbstract the layout.
      */

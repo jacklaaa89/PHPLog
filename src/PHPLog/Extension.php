@@ -15,8 +15,27 @@ class Extension
     /* whether this extension has been shutdown or not. */
     protected $closed = false;
 
-    /* the uniqueID of this instance. */
-    protected $uniqueID;
+    /* the name of the logger that this writer is associated with. */
+    protected $loggerName;
+
+    /**
+     * sets the logger name for this extension to get system services.
+     * @param string $loggerName the name of the logger this extension is 
+     *                           associated with.
+     */
+    public function setLoggerName($loggerName)
+    {
+        $this->loggerName = $loggerName;
+    }
+
+    /**
+     * gets the loggers name that this extension is associated with.
+     * @return string the name of the logger this extension is associated with.
+     */
+    public function getLoggerName()
+    {
+        return $this->loggerName;
+    }
     
     /**
      * gets the name of the extension.
@@ -51,19 +70,7 @@ class Extension
      */
     public function __construct() 
     {
-        //generate a uniqueID for this layout.
-        //by deduction a layout would be added to the latest entry in loggers.
-        $this->uniqueID = Logger::generateUniqueID();
         $this->start();
-    }
-
-    /**
-     * get the uniqueID of this instance.
-     * @return string the uniqueID of this instance.
-     */
-    public final function getUniqueID() 
-    {
-        return $this->uniqueID;
     }
 
     /** 
@@ -73,7 +80,7 @@ class Extension
      */
     public final function getSystemService($serviceIdentifer) 
     {
-        return Logger::getSystemService($this->uniqueID, $serviceIdentifer);
+        return Logger::getSystemService($this->getLoggerName(), $serviceIdentifer);
     }
 
     /**

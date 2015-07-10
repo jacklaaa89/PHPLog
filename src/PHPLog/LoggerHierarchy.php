@@ -34,9 +34,6 @@ class LoggerHierarchy extends ExtraAbstract
     */
     protected $threshold;
 
-    /* a map of uniquely mapped ids, so layouts and writers can get access to system services. */
-    protected $uniqueIDs = array();
-
     /**
      * retrieves or creates a new logger by its name. A logger is added to the
      * hierarchy and its parent is assigned during the retrieval.
@@ -83,24 +80,6 @@ class LoggerHierarchy extends ExtraAbstract
     }
 
     /**
-     * generates a unique id which links a logger to an element attached to it.
-     * @return string the uniqueID or null if one could not be generated.
-     */
-    public function generateUniqueID() 
-    {
-        $logger = $this->getLatestLoggerInstance();
-        if($logger instanceof Logger) {
-            $id = substr(base64_encode(hash('sha256', 'PHPLog-'.mt_rand(1, 10).'-'.time())), 0, 10);
-            if(array_key_exists($id, $this->uniqueIDs)) {
-                $id = $this->generateUniqueID();
-            }
-            $this->uniqueIDs[$id] = $logger->getName();
-            return $id;
-        }
-        return null;
-    }
-
-    /**
      * gets the latest logger instance to be added to the heirarchy.
      * @return Logger the latest Logger instance.
      */
@@ -123,22 +102,12 @@ class LoggerHierarchy extends ExtraAbstract
 
     /**
      * attempts to get a system service from a defined logger instance.
-     * @param string uniqueID the id of the object attempting to get the service.
+     * @param string loggerName the name of the logger.
      * @param string serviceIdentifier the service required.
      * @return mixed the found service, or null if not found.
      */
-    public function getSystemService($uniqueID, $serviceIdentifier) 
+    public function getSystemService($loggerName, $serviceIdentifier) 
     {
-        if($uniqueID == null || strlen($uniqueID) == 0) {
-            return;
-        }
-
-        if(!array_key_exists($uniqueID, $this->uniqueIDs)) {
-            return;
-        }
-
-        $loggerName = $this->uniqueIDs[$uniqueID];
-
         if(!array_key_exists($loggerName, $this->loggers)) {
             return;
         }
@@ -165,7 +134,6 @@ class LoggerHierarchy extends ExtraAbstract
     public function clear() 
     {
         $this->loggers = array();
-        $this->uniqueIDs = array();
         $this->clearExtras(); //clear the global extras.
     }
 

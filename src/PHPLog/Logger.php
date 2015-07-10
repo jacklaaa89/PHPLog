@@ -359,7 +359,6 @@ class Logger extends ExtraAbstract
     public function addWriter($writer) 
     {
 
-
         if (!($writer instanceof WriterAbstract) && !($writer instanceof \Closure)) {
             return;
         }
@@ -370,6 +369,8 @@ class Logger extends ExtraAbstract
                 return;
             }
         }
+
+        $writer->setLoggerName($this->getName());
 
         $name = $writer->getName();
         $this->writers[$name] = $writer;
@@ -570,24 +571,15 @@ class Logger extends ExtraAbstract
     }
 
     /**
-     * Generates a unique id for a layout or writer to attach to its logger instance.
-     * @return void
-     */
-    public static function generateUniqueID() 
-    {
-        return self::getHierarchy()->generateUniqueID();
-    }
-
-    /**
      * Retrieves a system service.
-     * @param string $uniqueID          the unique identifier for the
+     * @param string $loggerName        the unique identifier for the
      *                                  object requesting the service.
      * @param string $serviceIdentifier the service required.
      * @return mixed the required system service.
      */
-    public static function getSystemService($uniqueID, $serviceIdentifier) 
+    public static function getSystemService($loggerName, $serviceIdentifier) 
     {
-        return self::getHierarchy()->getSystemService($uniqueID, $serviceIdentifier);
+        return self::getHierarchy()->getSystemService($loggerName, $serviceIdentifier);
     }
 
     /**
