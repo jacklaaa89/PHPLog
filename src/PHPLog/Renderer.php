@@ -54,18 +54,17 @@ class Renderer
      */
     public static function newInstance() 
     {
-
         //set some base renderers.
         //the key is the fully qualified name of the class the renderer is for.
         //the value is the renderer instance to deal with it.
         $map = array(
-            '\\RMA\\Core\\Utilities\\Logger\\Logger' => array(
+            '\\PHPLog\\Logger' => array(
                 'renderer' => new LoggerRenderer(), 
-                'disable' => true
+                'disable'  => true
             ),
-            '\\Exception'                            => array(
+            '\\Exception'      => array(
                 'renderer' => new Throwable(),       
-                'disable' => true
+                'disable'  => true
             )
         );
 
