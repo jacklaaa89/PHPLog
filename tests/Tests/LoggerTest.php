@@ -7,6 +7,7 @@ use PHPLog\LoggerHierarchy;
 use PHPLog\Writer\EchoWriter;
 use PHPLog\Filter\LevelMatch;
 use PHPLog\Filter\DenyAll;
+use PHPLog\Level;
 
 /**
  * Test case to test that the logging functionality is working 
@@ -18,6 +19,10 @@ use PHPLog\Filter\DenyAll;
 class LoggerTest extends \PHPUnit_Framework_TestCase
 {
 
+	/**
+	 * Tests that a Logger instance is initialized correctly and that
+	 * it gets added to the hierarchy and that the parent gets set correctly.
+	 */
 	public function testInitializeLogger()
 	{
 
@@ -40,6 +45,31 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
 	}
 
+	/**
+	 * Tests that we can use namespaces to specify parents to loggers.
+	 */
+	public function testParentHierarchy()
+	{
+		//clear any previous configuration (as hierarchy is stored between calls)
+		Logger::getHierarchy()->clear();
+
+		$test = Logger::getLogger('test');
+		$logger = Logger::getLogger('test.test_logger');
+		$hierarchy = Logger::getHierarchy();
+
+		//because of the test namespace, the test logger should be the parent of test.test_logger.
+		//check that this loggers instance has a root logger.
+		$this->assertNotNull($logger->getParent());
+		$this->assertEquals($test->getName(), $logger->getParent()->getName());
+
+		//also test that the test logger has a root logger.
+		$this->assertNotNull($test->getParent());
+		$this->assertInstanceOf('PHPLog\Root', $test->getParent());
+	}
+
+	/**
+	 * tests that we can add a writer to a logger instance.
+	 */
 	public function testAddWriter() 
 	{
 		//clear any previous configuration (as hierarchy is stored between calls)
@@ -55,6 +85,9 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
 	}
 
+	/**
+	 * tests that we can add a filter chain to a logger instance.
+	 */
 	public function testAddFilter()
 	{
 		//clear any previous configuration (as hierarchy is stored between calls)
@@ -78,6 +111,47 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 		}
 	}
 
+	/**
+	 * Mainly tests that we can set a logger to a threshold.
+	 * Also confirms the functionality of disabling propogation and setting
+	 * level and 'enablePropogation' in the configuration array.
+	 */
+	public function testSetLoggerThreshold()
+	{
+		//clear any previous configuration (as hierarchy is stored between calls)
+		Logger::getHierarchy()->clear();
+		$logger = Logger::getLogger(
+			'test_logger', 
+			array(
+				'enablePropogation' => false,
+				'level'				=> Level::warn(),
+				'writers'           => array(
+					'EchoWriter' => array()
+				)  
+			)
+		);
+
+		$tMessage = 'Tester Message';
+
+		//attempt an info message, should be no output.
+		ob_start();
+		$logger->info($tMessage);
+		$message = ob_get_clean();
+
+		$this->assertEquals('', $message);
+
+		//attempt a fatal message, should succeed.
+		ob_start();
+		$logger->fatal($tMessage);
+		$message = ob_get_clean();
+
+		$this->assertNotEquals('', $message);
+
+	}
+
+	/**
+	 * tests that we can add a renderer to a logger instance.
+	 */
 	public function testAddRenderer()
 	{
 		//clear any previous configuration (as hierarchy is stored between calls)
@@ -95,6 +169,9 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
 	}
 
+	/**
+	 * tests that we can initialize a logger using a configuration array.
+	 */
 	public function testAddByConfiguration() 
 	{
 		//clear any previous configuration (as hierarchy is stored between calls)
@@ -118,6 +195,9 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
 	}
 
+	/**
+	 * tests that we can write using a logger with no filters.
+	 */
 	public function testWriteNoFilters() 
 	{	
 
@@ -140,6 +220,9 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
 	}
 
+	/**
+	 * tests that we can write using a logger with filters.
+	 */
 	public function testWriteWithFilters() 
 	{
 		//clear any previous configuration (as hierarchy is stored between calls)
@@ -157,12 +240,65 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 			)
 		);
 
-		//would usually be null, i.e no output, but ob_start returns an empty
+		//would usually be null, i.e no output, but ob_get_clean returns an empty
 		//string because thats the empty output buffer.
 		ob_start();
 		$logger->info('Tester Message');
 		$message = ob_get_clean();
 		$this->assertEquals('', $message);
+	}
+
+	/**
+	 * Tests that we can add extra values to a log and they will be used.
+	 * We will test all three extra scope levels. Global, Logger and Individual Log Event.
+	 * This test also confirms the functionality of changing the pattern used when logging events.
+	 */
+	public function testAddExtrasToLog()
+	{
+		//clear any previous configuration (as hierarchy is stored between calls)
+		Logger::getHierarchy()->clear();
+
+		//add a standard echo writer, and a string global value and an array local value as
+		// extras.
+
+		$global = 'Tester Global'; $local = array('key' => 'value');
+		$logEvent = 1;
+
+		$logger = Logger::getLogger(
+			'test_logger',
+			array(
+				'writers' => array(
+					'EchoWriter' => array(
+						'layout' => array(
+							'pattern' => 'TESTER-LOG - [%level] - %testerGlobal - %testerLocal - %logEvent'
+						)
+					)
+				),
+				'extras' => array(
+					'global' => array(
+						'testerGlobal' => $global
+					),
+					'local' => array(
+						'testerLocal' => $local
+					)
+				)
+			)
+		);
+
+		ob_start();
+		$logger->info('Tester Message', array('logEvent' => $logEvent));
+		$message = ob_get_clean();
+
+		//assert that the log contains the global extra.
+		$this->assertRegExp('/'.$global.'/', $message);
+
+		//assert that the log contains the local extra, the default array renderer
+		//performs a recursive json_encode on the value.
+		$this->assertRegExp('/'.json_encode($local).'/', $message);
+
+		//assert that the log contains the logEvent extra.
+		$this->assertRegExp('/'.$logEvent.'/', $message);
+
 	}
 
 

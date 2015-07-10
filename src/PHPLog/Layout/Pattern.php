@@ -144,6 +144,9 @@ class Pattern extends LayoutAbstract
         $this->specialValues = array(
         /* used to format dates into a specific format. */
         'date' => function ($value, $format) {
+            if (!is_int($value)) {
+                return $value; //if the value has been rendered differently, return it.
+            }
             $format = (is_array($format)) ? $format[0] : $format;
             $format = (isset($format) && strlen($format) > 0) ? $format : 'Y-m-d';
             return date($format, $value);

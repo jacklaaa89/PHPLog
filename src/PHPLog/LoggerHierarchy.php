@@ -40,6 +40,7 @@ class LoggerHierarchy extends ExtraAbstract
     /**
      * retrieves or creates a new logger by its name. A logger is added to the
      * hierarchy and its parent is assigned during the retrieval.
+     * WARNING - to accomodate the use of namespaces on loggers, the parent logger has to be added first.
      * @param string $name the name of the logger.
      * @return Logger the new or existing Logger instance.
      */
@@ -165,6 +166,7 @@ class LoggerHierarchy extends ExtraAbstract
     {
         $this->loggers = array();
         $this->uniqueIDs = array();
+        $this->clearExtras(); //clear the global extras.
     }
 
     /**
@@ -186,37 +188,71 @@ class LoggerHierarchy extends ExtraAbstract
     private function setInitialConfiguration(&$logger, $config) 
     {
 
-        if(isset($config['writers'])) {
+        if (isset($config['level'])) {
+
+            $level = $config['level'];
+            if (!($level instanceof Level)) {
+                $level = Level::parseFromString($level);
+            }
+            if ($level instanceof Level) {
+                $logger->setLevel($level);
+            }
+        }
+
+        if (isset($config['enablePropogation']) && is_bool($config['enablePropogation'])) {
+            $logger->setPropogation($config['enablePropogation']);
+        }
+
+        //see if any global extras or logger extras have been added to the config.
+        if (isset($config['extras'])) {
+            if(isset($config['extras']['global']) 
+                && is_array($config['extras']['global'])
+                && count($config['extras']['global']) > 0) {
+                foreach ($config['extras']['global'] as $key => $value) {
+                    Logger::addGlobalExtra($key, $value);
+                }
+            }
+
+            if(isset($config['extras']['local']) 
+                && is_array($config['extras']['local'])
+                && count($config['extras']['local']) > 0) {
+                foreach ($config['extras']['local'] as $key => $value) {
+                    $logger->addExtra($key, $value);
+                }
+            }
+        }
+
+        if (isset($config['writers'])) {
             //set all of the valid writers.
-            foreach($config['writers'] as $name => $writerConf) {
+            foreach ($config['writers'] as $name => $writerConf) {
                 $className = '\\PHPLog\\Writer\\'.$name;
-                if(class_exists($className)) {
+                if (class_exists($className)) {
                     $writer = new $className($writerConf);
                     $logger->addWriter($writer);
                 }
             }
         }
 
-        if(isset($config['filters'])) {
+        if (isset($config['filters'])) {
             //set all valid filters.
-            foreach($config['filters'] as $name => $filterConf) {
+            foreach ($config['filters'] as $name => $filterConf) {
                 $className = '\\PHPLog\\Filter\\'.$name;
-                if(class_exists($className)) {
+                if (class_exists($className)) {
                     $filter = new $className($writerConf);
                     $logger->addFilter($filter);
                 }
             }
         }
 
-        if(isset($config['renderers'])) {
-            foreach($config['renderers'] as $class => $renderer) {
-                if(!($renderer instanceof RendererInterface)) {
-                    if(!is_string($renderer)) {
+        if (isset($config['renderers'])) {
+            foreach ($config['renderers'] as $class => $renderer) {
+                if (!($renderer instanceof RendererInterface)) {
+                    if (!is_string($renderer)) {
                         return;
                     }
-                    if(!class_exists($renderer)) {
+                    if (!class_exists($renderer)) {
                         $renderer = '\\PHPLog\\Renderer\\'.$renderer;
-                        if(!class_exists($renderer)) {
+                        if (!class_exists($renderer)) {
                             return;
                         }
                     }

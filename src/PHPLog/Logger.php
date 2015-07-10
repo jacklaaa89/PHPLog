@@ -92,6 +92,27 @@ class Logger extends ExtraAbstract
     }
 
     /**
+     * sets whether propogation should be used in this logger.
+     * if this is set to false, the logging event will be stopped here
+     * regardless of if the log was handled or not.
+     * @param bool $propogation whether to enable propogation.
+     * @return void
+     */
+    public function setPropogation($propogation)
+    {
+        $this->propogation = (is_bool($propogation)) ? $propogation : true;
+    }
+
+    /**
+     * determines if propogation is enabled in this logger.
+     * @return bool whether propogation is enabled in this logger.
+     */
+    public function isPropogationEnabled()
+    {
+        return $this->propogation;
+    }
+
+    /**
      * Gets the global renderer instance.
      * @return Renderer the global renderer instance.
      */

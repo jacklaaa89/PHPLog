@@ -159,6 +159,23 @@ class Level
         return new Level(Level::TRACE, 'TRACE');
     }
 
-
+    /**
+     * Attempts to parse a level from its string name.
+     * if the string cannot be parsed into a valid level, then null is returned.
+     * @param string $level the string representation of the level to be parsed.
+     * @return Level|null the corresponding level on success, NULL on failure.
+     */
+    public static function parseFromString($level)
+    {
+        if(!is_string($level) || strlen($level) == 0) {
+            return null;
+        }
+        
+        $level = strtolower($level);
+        if (method_exists('PHPLog\Level', $level)) {
+            return self::$level();
+        }
+        return null;
+    }
 
 }
