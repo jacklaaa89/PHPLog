@@ -150,13 +150,13 @@ class WriterTest extends \PHPUnit_Framework_TestCase
 		//close the handle.
 		fclose($handle);
 		
+
+		$this->assertEquals(1, $this->getLines(__DIR__.'/testFile.csv'));
+
 		//remove the tester csv file.
 		if (file_exists(__DIR__.'/testFile.csv')) {
 			unlink(__DIR__.'/testFile.csv');
 		}
-
-		$this->assertEquals(1, $this->getLines(__DIR__.'/testFile.csv'));
-
 
 	}
 
