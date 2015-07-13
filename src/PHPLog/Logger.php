@@ -246,7 +246,7 @@ class Logger extends ExtraAbstract
             }
         }
 
-        if ($this->isEnabledFor($level) && strlen($message) != 0) {
+        if ($this->isEnabledFor($level) && isset($message)) {
 
             $event = new Event($this, $level, $message);
 

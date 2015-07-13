@@ -66,7 +66,7 @@ class Renderer
             ),
             '\\Exception'      => array(
                 'renderer' => new Throwable(),       
-                'disable'  => true
+                'disable'  => false
             )
         );
 

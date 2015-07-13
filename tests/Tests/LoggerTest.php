@@ -301,5 +301,30 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
 	}
 
+	public function testWriteObject()
+	{
+		$object = new \PHPLog\Exception\CompilerException('A Complier Exception', ' %if tester < 3 Hello %else%', 10);
+
+		//clear any previous configuration (as hierarchy is stored between calls)
+		Logger::getHierarchy()->clear();
+
+		$logger = Logger::getLogger(
+			'test_logger',
+			array(
+				'writers' => array(
+					'EchoWriter' => array()
+				)
+			)
+		);
+
+		$logger->addRenderer($object, new CompilerRenderer(), true);
+
+		ob_start();
+		$logger->info($object);
+		$message = ob_get_clean();
+		$this->assertNotEquals('', $message);
+
+	}
+
 
 }

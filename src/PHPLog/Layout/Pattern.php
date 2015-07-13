@@ -165,6 +165,9 @@ class Pattern extends LayoutAbstract
                 }
             }
             return $value;
+        },
+        'message' => function($value, $format) {
+            return $this->render($value);
         }
         );
 
