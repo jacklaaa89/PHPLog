@@ -29,7 +29,7 @@ use PHPLog\ExtraAbstract;
 use PHPLog\FilterAbstract;
 use PHPLog\Writer\EchoWriter;
 use PHPLog\Renderer;
-
+use PHPLog\Writer\CSV;
 /**
  * The Logger class which is the class what will start the logging process.
  *
@@ -66,6 +66,7 @@ class Logger extends ExtraAbstract
     /* the writers this logger should attempt to append to. */
     protected $writers = array();
 
+    /* the renderer for this logger instance. */
     protected $renderer;
 
     /* boolean flag whether to allow propogation to the parent 
@@ -80,6 +81,12 @@ class Logger extends ExtraAbstract
     /* any filter that will be applied to the log event. */
     protected $filter;
 
+    /* determines whether this writer has been closed. 
+       if this writer is closed all events are passed to the parent
+       (if propogation is enabled)
+     */
+    protected $closed = false;
+
     /**
      * Constructor - sets the name and the default logging level.
      * @param string $name the name of this logger.
@@ -89,6 +96,15 @@ class Logger extends ExtraAbstract
         $this->name = $name;
         //default to all logs.
         $this->setLevel(Level::all());
+    }
+
+    /**
+     * Destructor - closes this logger instance throughly.
+     *
+     */
+    public function __destruct() 
+    {
+        $this->close();
     }
 
     /**
@@ -221,6 +237,14 @@ class Logger extends ExtraAbstract
     public function log(Level $level, $message, $extras = array()) 
     {
         $handled = false;
+
+        //if this loggers closed, propogate this event to the parent if propogation is
+        //enabled.
+        if ($this->closed) {
+            if (isset($this->parent) && $this->propogation) {
+                $this->parent->log($level, $message, $extras);
+            }
+        }
 
         if ($this->isEnabledFor($level) && strlen($message) != 0) {
 
@@ -373,6 +397,7 @@ class Logger extends ExtraAbstract
         $writer->setLoggerName($this->getName());
 
         $name = $writer->getName();
+
         $this->writers[$name] = $writer;
     }
 
@@ -383,6 +408,24 @@ class Logger extends ExtraAbstract
     public function getName() 
     {
         return $this->name;
+    }
+
+    /**
+     * Force close the logger, including all of the writers.
+     * @return void
+     */
+    public function close()
+    {
+        //close all of the writers.
+        foreach ($this->writers as $writer) {
+            $writer->close();
+        }
+
+        //remove this logger from the hierarchy.
+        self::getHierarchy()->closeLogger($this);
+
+        $this->closed = true;
+
     }
 
     /**
