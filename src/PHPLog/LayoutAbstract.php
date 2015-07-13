@@ -64,6 +64,11 @@ abstract class LayoutAbstract extends Extension
     public final function render($object) 
     {
         $renderer = $this->getRenderer();
+
+        if(!($renderer instanceof Renderer)) {
+            throw new \Exception('Renderer could be determined.');
+        }
+
         try {
             $value = $renderer->render($object);
         } catch (\Exception $e) {

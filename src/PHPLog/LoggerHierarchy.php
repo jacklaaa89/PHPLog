@@ -108,19 +108,21 @@ class LoggerHierarchy extends ExtraAbstract
      */
     public function getSystemService($loggerName, $serviceIdentifier) 
     {
-        if(!array_key_exists($loggerName, $this->loggers)) {
-            return;
+        $logger = null;
+
+        if (!array_key_exists($loggerName, $this->loggers)) {
+            $logger = $this->root;
         }
 
-        $logger = $this->loggers[$loggerName];
+        $logger = (isset($logger)) ? $logger : $this->loggers[$loggerName];
 
-        if(!($logger instanceof Logger)) {
+        if (!($logger instanceof Logger)) {
             return;
         }
 
         $method = 'get'.ucwords(strtolower($serviceIdentifier));
 
-        if(!method_exists($logger, $method)) {
+        if (!method_exists($logger, $method)) {
             return;
         }
 

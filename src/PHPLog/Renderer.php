@@ -31,6 +31,8 @@ use PHPLog\Renderer\ArrayRenderer;
  *
  * @version 1
  * @version 1.1 allowed for inheritance based rendering where we can concatinate output 
+ * @version 1.2 updated the renderer to correctly render traversable objects. (it recursively goes through 
+ * each of the objects in the collection)
  * from multiple renderers which handle the same object type.
  * @author  Jack Timblin
  */
