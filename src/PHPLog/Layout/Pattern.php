@@ -424,7 +424,7 @@ class Pattern extends LayoutAbstract
     {
         //parse the variables from the event into the provided pattern.
         if(!preg_match_all($this->regex, $statement, $matches)) {
-            throw new CompilerException('Syntax Error - regex compiler exception', $statement);
+            return $this->pattern;
         }
 
         //check have matches.
