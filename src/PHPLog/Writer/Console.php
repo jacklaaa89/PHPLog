@@ -26,6 +26,9 @@ class Console extends WriterAbstract
     /* PHP's standard error stream */
     const STDERR = 'php://stderr';
 
+    /* PHP's output mechanism which is used by print() and echo() */
+    const OUTPUT = 'php://output';
+
     /* boolean flag to determine whether to change stream based on
 	   the provided minimum log level. defaults to true.
     */
@@ -70,7 +73,8 @@ class Console extends WriterAbstract
                     $target, 
                     array(
                     self::STDOUT, 
-                    self::STDERR
+                    self::STDERR,
+                    self::OUTPUT
                     )
                 );
             }
