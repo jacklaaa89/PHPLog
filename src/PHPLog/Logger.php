@@ -421,9 +421,6 @@ class Logger extends ExtraAbstract
             $writer->close();
         }
 
-        //remove this logger from the hierarchy.
-        self::getHierarchy()->closeLogger($this);
-
         $this->closed = true;
 
     }

@@ -131,18 +131,6 @@ class LoggerHierarchy extends ExtraAbstract
     }
 
     /**
-     * removes a logger from the hierarchy.
-     * @param Logger $logger the logger to remove.
-     * @return void
-     */
-    public function closeLogger(Logger $logger) 
-    {
-        if (array_key_exists($logger->getName(), $this->loggers)) {
-            unset($this->loggers[$logger->getName()]);
-        }
-    }
-
-    /**
      * clears the current logger hierarchy
      */
     public function clear() 
