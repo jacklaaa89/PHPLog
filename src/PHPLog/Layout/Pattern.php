@@ -70,6 +70,8 @@ class Pattern extends LayoutAbstract
     /* added some constant values. */
     private $consts = array();
 
+    private $defaultPattern = '%level - %date{\'Y-m-d\'} %message';
+
     /**
      * initializes the layout using the configuration.
      * @param Configuration $config the configuration for this layout.
@@ -80,7 +82,7 @@ class Pattern extends LayoutAbstract
         //get configuration values passed from the user.
         parent::init($config);
 
-        $this->pattern = $config->get('pattern', $this->pattern);
+        $this->pattern = $config->get('pattern', $this->defaultPattern);
         $this->identifier = $config->get('identifier', $this->identifier);
 
         //format the regex's to parse variables from the pattern.

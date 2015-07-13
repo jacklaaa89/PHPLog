@@ -27,6 +27,8 @@ class File extends WriterAbstract
     /* whether to lock the file while writing takes place. */
     private $locking = true;
 
+    private $pattern = '[LOG] - [%level] - [%date{\'Y-m-d H:i:s\'}] - %message%newline';
+
     /**
      * Constructor - initializes the pattern and set the required variables. 
      * @param array $config the configutation for this writer.
@@ -36,6 +38,7 @@ class File extends WriterAbstract
         $this->fileLocation = $config->get('file', '');
         $this->append = $config->get('append', true);
         $this->locking = $config->get('locking', true);
+        $this->getLayoutConfig()->set('pattern', $this->pattern, true);
         $this->setLayout(new Pattern());
     }
 
